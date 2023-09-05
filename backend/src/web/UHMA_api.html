@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MAPA UHMA</title>
+		<style>
+			#map {
+				width: 1870px;
+				height: 910px;
+			}
+			.measure-parameters {
+				max-width: 400px;
+				display: flex;
+				flex-wrap: wrap;
+				font-family: Arial, Helvetica, sans-serif;
+				text-align: center;
+				border: 0.5px solid #DDDDDD;
+			}
+			.measure-parameters > div {
+				box-sizing: border-box;
+				padding: 8px;
+				width: 33.33333%;
+				border: 0.5px solid #DDDDDD;
+			}
+			.measure-parameters > div:last-child {
+				flex-grow: 1;
+			}
+			#logo {
+				position: absolute;
+				left: 20px; /* Posição horizontal da imagem em relação à margem esquerda */
+				top: 20px; /* Posição vertical da imagem em relação à margem superior */
+				width: 100px; /* Largura da imagem */
+				height: 100px; /* Altura da imagem */
+				z-index: 2; 
+			}
+		</style>
+		<script 
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIa2njnlSILDb0CMxe9NhcJ7ZQgSiht-Y&v=beta&libraries=marker&callback=initMap&v=beta">
+		</script>
+		<script>
+			const urlAPIUsina = 'http://localhost:3000/usinas/UHMA'; // url API NodeJS local // Porta do PG // Modificar aqui conforme a usina
+			const urlAPIEstacoes = 'http://localhost:3000/estacoes/UHMA'; // url API NodeJS local // Porta do PG // Modificar aqui conforme a usina
+			
+			// Variável global para armazenar informações
+			var allMarkers = [];
+
+			// Constantes globais
+			const COR_VERDE = '#00FF00';
+			const COR_VERMELHA = '#FF0000';
+			const COR_CINZA = '#818181';
+
+			async function getData(URL) {
+				try {
+					const request = new XMLHttpRequest();
+					const timestamp = new Date().getTime(); // Generate a unique timestamp
+					const cacheBusterURL = URL + '?timestamp=' + timestamp; // usado para evitar cache do browser
+					request.open('GET', cacheBusterURL, false); // Make the request synchronous by passing false 
+					await request.send();
+					if (request.status === 200) {
+						const data = JSON.parse(request.responseText);
+						return data;
+					} else {
+						console.log('Error getting data:', request.status);
+						return null;
+					}
+				} catch (error) {
+					console.log('Error getting data:', error);
+					return null;
+				}
+			}
+
+			// Função para criar o mapa
+			async function initMap() {				
+				var dadosUsinaApi = await getData(urlAPIUsina); // API <--> BD
+				var dadosEstacoesAPI = await getData(urlAPIEstacoes); // API <--> BD
+				var usina = dadosUsinaApi.usina;
+                
+				var marcadores =  dadosEstacoesAPI.estacoes;
+				console.log("dadosUsinaApi init: ", dadosUsinaApi);
+				console.log("dadosEstacoesAPI init: ", dadosEstacoesAPI);
+				
+				document.title = usina.e3_label;
+				
+				const map = new google.maps.Map(document.getElementById("map"), { // Chamada da API do Google Maps -> Gera o Mapa
+					zoom: usina.zoom,
+					center: { lat: usina.lat, lng: usina.lng },
+					mapId: "19392f27b147b2cb",
+				});
+
+				var tourStops = new Array();
+				for (var marcador of marcadores) {
+					var infoArray = [`${marcador.timestamp_eqp}`];
+					var infoSts = [
+					marcador.alm_acss,
+					marcador.alm_alim,
+					marcador.alm_audio,
+					marcador.alm_cmd,
+					marcador.alm_com,
+					marcador.alm_hdw,
+					marcador.sts_ping
+					];
+					var position = { lat: marcador.lat, lng: marcador.lng } 
+					var cor;
+					if (marcador.sts_ping == false) {
+						cor = COR_VERMELHA;
+					} else if (marcador.sts_ping == true) {
+						cor = COR_VERDE;
+					} else {
+						cor = COR_CINZA;
+					}
+
+                    var label = "";
+                    if (marcador.e3_label.charAt(0) == "C") { // Se for COL00
+                        label = marcador.e3_label.replace(/.{2}$/, '');
+                    } else { // Se for ER
+                        label = marcador.e3_label.replace(/^.{2}/, '');
+                    }
+					
+					var obj = {
+						position: position,
+						title: marcador.descrp,
+						label: label,
+						content: criaPopupMarcador(marcador.descrp, position, infoArray, infoSts),
+						cor: cor
+					};
+
+					tourStops.push(obj);
+				}
+				
+				// Crie uma janela de informações para compartilhar entre os marcadores.
+				const infoWindow = new google.maps.InfoWindow();
+				window.infoWindow = infoWindow;
+				
+				// Cria os marcadores	
+				tourStops.forEach(function({ position, title, label, content, cor }){
+					var popupContent = content;
+							
+					const pinView = new google.maps.marker.PinView({
+						glyph: label,
+						borderColor: '#FFFFFF',
+						background: cor,
+					});
+					const marker = new google.maps.marker.AdvancedMarkerView({
+						position,
+						map,
+						title: title,
+						content: pinView.element,
+					});
+				
+					// Eventos de clique dos marcadores
+					marker.addListener("click", () => {
+						infoWindow.close();
+						infoWindow.setContent(getPopupContent(label));
+						infoWindow.open(marker.map, marker);
+					});
+
+					allMarkers.push({label: label, marker: marker, position: position, popupContent: popupContent});
+				});
+				
+				// Função privada para obter o conteúdo HTML das janelas popup
+				function getPopupContent(markerLabel) {
+					var element = allMarkers.find(element => element.label == markerLabel);
+					return element.popupContent;
+				}        
+			}
+
+			// Atualiza os dados do mapa dinamicamente
+			async function updateMap(dados) {
+				var dadosEstacoesAPI = await getData(urlAPIEstacoes); // API <--> BD
+				var marcadores =  dadosEstacoesAPI.estacoes;
+				console.log("dadosEstacoesAPI update: ", dadosEstacoesAPI);
+				
+				for (var i of marcadores) {
+                    var marcador;
+                    if (i.e3_label.charAt(0) == "C") { // Se for COL00
+                        var marcador = allMarkers.find(element => `${element.label}00` == i.e3_label);
+                    } else { // Se for ER
+                        var marcador = allMarkers.find(element => `ER${element.label}` == i.e3_label);
+                    }
+
+					// Mudar cor dos marcadores
+					if (i.sts_ping == false) {
+						marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_VERMELHA);
+					} else if (i.sts_ping == true) {
+						marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_VERDE);
+					} else {
+						marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_CINZA);
+					}
+					
+					var infoArray = [`${i.timestamp_eqp}`];
+					var infoSts = [
+					i.alm_acss,
+					i.alm_alim,
+					i.alm_audio,
+					i.alm_cmd,
+					i.alm_com,
+					i.alm_hdw,
+					i.sts_ping
+					];
+					var position = { lat: marcador.lat, lng: marcador.lng } 
+					
+					// Atualizar janela popup de informações
+
+					var html = criaPopupMarcador(i.descrp, marcador.position, infoArray, infoSts);
+					marcador.popupContent = html;
+				}
+				
+				// Atualizar janela popup
+				var marcadorAtual = infoWindow.getAnchor();
+				var foo = allMarkers.find(element => element.marker == marcadorAtual);
+				if (foo) {
+					infoWindow.setContent(foo.popupContent);
+				}
+			}
+
+			// Função para criar o conteúdo HTML das janelas popup
+			function criaPopupMarcador(descrp, position, infoArray, infoSts) {
+				let chave, valor;
+				var html = "";
+
+				html += '<div>' +
+				'<h3 class="first-heading">Detalhes - ' + descrp + '</h3>' +
+				'<p>Rota: <a href="https://www.google.com/maps?q=' + position.lat + ',' + position.lng + '" target="_blank">Me leve até aqui!</a></p>' +
+				'<p> Ultimo Ping: ' + infoArray + '</p>' + '<div class="measure-parameters">';
+
+				for (j=0; j < infoSts.length; j++) {
+					let stsColor = "blue";
+					if (j == 0) {
+						chave = "Alarme de Acesso";
+						if (infoSts[0] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else if (j == 1) {
+						chave = "Alarme de Alimentacao";
+						if (infoSts[1] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else if (j == 2) {
+						chave = "Alarme de Audio";
+						if (infoSts[2] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else if (j == 3) {
+						chave = "Alarme de Comando";
+						if (infoSts[3] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else if (j == 4) {
+						chave = "Alarme de Comunicacao";
+						if (infoSts[4] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else if (j == 5) {
+						chave = "Alarme de Hardware";
+						if (infoSts[5] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else {
+						chave = "Estado da Comunicacao";
+						if (infoSts[6] == false) {
+							valor = "Offline", stsColor = "red";
+						} else {
+							valor = "Online";
+						}
+					}
+					html += '<div style="text-align:left; color: ' + stsColor + '">' +
+								'<th>' + chave + ': <th/><th>' +  valor + '</th>'
+							'</div>';
+				}
+				return html;
+			}
+
+			window.setInterval(updateMap, 15000); // Atualiza mapa a cada 15000 milisegundos (15 segundos)
+			initMap();
+
+		</script>
+	</head>
+	<body>
+		<img id="logo" src="https://media.licdn.com/dms/image/C4E0BAQE-ZZaURHu6jQ/company-logo_200_200/0/1626287863241?e=1698883200&v=beta&t=IhPJKW9tC7i7nZjZloppNuAJkkF_uLB6tFmxIp7yaQk" alt="Logo da Empresa">
+		<div id="map"></div>
+	</body>
+</html>
