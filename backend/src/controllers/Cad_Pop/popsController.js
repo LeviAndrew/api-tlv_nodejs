@@ -18,7 +18,13 @@ const createLogin = async (req, res) => {
     return res.status(200).json({authenticated: user});
 };
 
+const testGetApi = async (req, res) => {
+    console.log("passou aqui no testGetApi ");
+    return res.status(200).json({test: true});
+};
+
 module.exports = {
     getPops,
-    createLogin
+    createLogin,
+    testGetApi
 };
