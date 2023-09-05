@@ -31,4 +31,7 @@ router.get('/cad_pop/:usina', popsController.getPops);
 // Login geral
 router.post('/login', popsController.createLogin);
 
+// Login geral
+router.get('/login', popsController.createLogin);
+
 module.exports = router;
