@@ -67,6 +67,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="auth.js"></script>
 </head>
 <body>
     <div class="login-container">
@@ -89,6 +90,9 @@
     <script>
         const loginForm = document.getElementById("loginForm");
         const errorMessage = document.getElementById("errorMessage");
+        let userAuth = auth.isAuthenticated();
+        console.log("userAuth: ", userAuth);
+        console.log("teste");
 
         loginForm.addEventListener("submit", async function (event) {
             event.preventDefault();
@@ -98,14 +102,17 @@
 
             try {
                 // Faz uma requisição POST para a API de login
-                const response = await axios.post("http://localhost:3000/login", {
+                console.log("vou fazer a req...");
+                const response = await axios.post("http://54.94.47.11:3000/login", {
                     username,
                     password,
                 });
                 console.log("retorno da requisição", response.data);
                 if (response.data.authenticated) {
                     // Se o login for bem-sucedido, redireciona para outra página HTML
-                    window.location.href = "file:///C:/Users/levia/Desktop/TLV/api-TLV/backend/src/web/UHIP_api.html";
+                    auth.setAuthenticated(true);
+                    // console.log("mudou?", auth.isAuthenticated());
+                    window.location.href = "http://3.140.139.163/map/selectedMap.html";
                 } else {
                     errorMessage.textContent = "Credenciais inválidas. Tente novamente.";
                 }

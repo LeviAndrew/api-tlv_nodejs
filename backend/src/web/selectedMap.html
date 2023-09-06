@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escolher Mapa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        li {
+            margin: 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script type="text/javascript" src="auth.js"></script>
+</head>
+<body>
+    <div>
+        <h1>Escolher Mapa</h1>
+        <ul>
+            <li><a href="http://3.140.139.163/map/UHIT_api.html">Mapa UHIT</a></li>
+            <li><a href="http://3.140.139.163/map/UHIT_cad_pop.html">Mapa de cadastro populacional de UHIT</a></li>
+            <li><a href="http://3.140.139.163/map/UHMA_api.html">Mapa UHMA</a></li>
+            <li><a href="http://3.140.139.163/map/UHPF_api.html">Mapa UHPF</a></li>
+            <li><a href="http://3.140.139.163/map/UHIP_api.html">Mapa UHIP</a></li>
+            <!-- Adicione mais opções de mapa conforme necessário -->
+        </ul>
+    </div>
+    <script>
+        // Verifica a autenticação antes de executar qualquer código específico da página
+        const userAuth = auth.isAuthenticated();
+        console.log("Auth mapa: ", userAuth);
+        if (!userAuth) {
+            // Redirecione para a página de login
+            window.location.href = "http://3.140.139.163/map/login.html";
+        }
+
+        // window.addEventListener('beforeunload', function () {
+        //     // Define a variável isAuthenticated como false ao fechar a página
+        //     auth.setAuthenticated(false);
+        // });
+    </script>
+</body>
+</html>

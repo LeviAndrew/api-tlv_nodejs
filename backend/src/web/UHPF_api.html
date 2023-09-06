@@ -36,9 +36,18 @@
 		<script 
 			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIa2njnlSILDb0CMxe9NhcJ7ZQgSiht-Y&v=beta&libraries=marker&callback=initMap&v=beta">
 		</script>
+		<script type="text/javascript" src="auth.js"></script>
 		<script>
-			const urlAPIUsina = 'http://localhost:3000/usinas/UHPF'; // url API NodeJS local // Porta do PG // Modificar aqui conforme a usina
-			const urlAPIEstacoes = 'http://localhost:3000/estacoes/UHPF'; // url API NodeJS local // Porta do PG // Modificar aqui conforme a usina
+			// Verifica a autenticação antes de executar qualquer código específico da página
+			const userAuth = auth.isAuthenticated();
+			console.log("Auth mapa: ", userAuth);
+			if (!userAuth) {
+				// Redirecione para a página de login
+				window.location.href = "http://3.140.139.163/map/login.html";
+			}
+
+			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/UHPF'; // url API NodeJS local // Porta do PG // Modificar aqui conforme a usina
+			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHPF'; // url API NodeJS local // Porta do PG // Modificar aqui conforme a usina
 			
 			// Variável global para armazenar informações
 			var allMarkers = [];
@@ -282,7 +291,11 @@
 			}
 
 			window.setInterval(updateMap, 15000); // Atualiza mapa a cada 15000 milisegundos (15 segundos)
-			initMap();
+
+			window.addEventListener('beforeunload', function () {
+				// Define a variável isAuthenticated como false ao fechar a página
+				auth.setAuthenticated(false);
+			});
 
 		</script>
 	</head>

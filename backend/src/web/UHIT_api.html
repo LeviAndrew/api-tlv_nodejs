@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<title>MAPA UHIT</title>
 		<style>
@@ -40,13 +40,21 @@
 		<script type="text/javascript" src="geoxml3.js"></script>
 		<script src="dist/geolib.js"></script>
 		<script src="dist/geolib.isPointInsideRobust.js"></script>
+		<script type="text/javascript" src="auth.js"></script>
 	</head>
 	<body>
 		<img id="logo" src="https://media.licdn.com/dms/image/C4E0BAQE-ZZaURHu6jQ/company-logo_200_200/0/1626287863241?e=1698883200&v=beta&t=IhPJKW9tC7i7nZjZloppNuAJkkF_uLB6tFmxIp7yaQk" alt="Logo da Empresa">
 		<div id="map"></div>
 		<script>
-			const urlAPIUsina = 'http://3.140.139.163/usinas/UHIT';
-			const urlAPIEstacoes = 'http://3.140.139.163/estacoes/UHIT';
+			// Verifica a autenticação antes de executar qualquer código específico da página
+			const userAuth = auth.isAuthenticated();
+			console.log("Auth mapa: ", userAuth);
+			if (!userAuth) {
+				// Redirecione para a página de login
+				window.location.href = "http://3.140.139.163/map/login.html";
+			}
+			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/UHIT';
+			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHIT';
 			const urlPoligonoKML = 'http://3.140.139.163/map/UHIT.txt';
 			
 			// Variável global para armazenar informações
@@ -326,6 +334,11 @@
 			}
 			
 			window.setInterval(updateMap, 45000); // Atualiza mapa a cada 45000 milisegundos (45 segundos)
+
+			window.addEventListener('beforeunload', function () {
+				// Define a variável isAuthenticated como false ao fechar a página
+				auth.setAuthenticated(false);
+			});
 
 		</script>
 	</body>

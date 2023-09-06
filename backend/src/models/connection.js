@@ -18,11 +18,11 @@ require('dotenv').config();
 const {Pool} = require('pg');
 
 const connection = new Pool({
-    host: process.env.PG_HOST,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
-    database: process.env.PG_DB,
-    port: process.env.PG_PORT,
+    host: process.env.PG_HOST || 'ls-a9732a55e0df85aff272964e77108aa19277d57b.ckdoefjvdpcz.us-east-2.rds.amazonaws.com',
+    user: process.env.PG_USER || 'dbmasteruser',
+    password: process.env.PG_PASSWORD || 'scadaTelevale2023',
+    database: process.env.PG_DB || 'E3',
+    port: process.env.PG_PORT || 5432,
     ssl: {
       // Defina o modo de segurança SSL desejado aqui
       // Valores possíveis: 'disable', 'require', 'verify-ca', 'verify-full'

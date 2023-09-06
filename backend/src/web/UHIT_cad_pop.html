@@ -78,6 +78,7 @@
 		<script type="text/javascript" src="geoxml3.js"></script>
 		<script src="dist/geolib.js"></script>
 		<script src="dist/geolib.isPointInsideRobust.js"></script>
+		<script type="text/javascript" src="auth.js"></script>
 	</head>
 	<body>
         <a href="https://www.televale.com.br/"><img id="logo" src="https://media.licdn.com/dms/image/C4E0BAQE-ZZaURHu6jQ/company-logo_200_200/0/1626287863241?e=1698883200&v=beta&t=IhPJKW9tC7i7nZjZloppNuAJkkF_uLB6tFmxIp7yaQk" alt="Logo da Empresa"></a>
@@ -90,10 +91,18 @@
         </div>
 		
 		<script type="text/javascript">
+			// Verifica a autenticação antes de executar qualquer código específico da página
+			const userAuth = auth.isAuthenticated();
+			console.log("Auth mapa: ", userAuth);
+			if (!userAuth) {
+				// Redirecione para a página de login
+				window.location.href = "http://3.140.139.163/map/login.html";
+			}
+
 			const urlJSON = 'http://3.140.139.163/map/UHIT.JSON';
-			// const urlAPIUsinas = 'http://localhost:3000/usinas';
-			// const urlAPIEstacoes = 'http://localhost:3000/estacoes';
-			// const urlAPIPop = 'http://localhost:3000/cad_pop/UHIT';
+			// const urlAPIUsinas = 'http://54.94.47.11:3000/usinas';
+			// const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes';
+			// const urlAPIPop = 'http://54.94.47.11:3000/cad_pop/UHIT';
 			const urlPoligonoKML = 'http://3.140.139.163/map/UHIT.txt';
 			
 			// Variável global para armazenar informações
@@ -402,6 +411,11 @@
 					xhr.send();
 				});
 			}
+			
+			window.addEventListener('beforeunload', function () {
+				// Define a variável isAuthenticated como false ao fechar a página
+				auth.setAuthenticated(false);
+			});
 
 		</script>
 	</body>
