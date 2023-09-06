@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<title>MAPA UHMA</title>
 		<style>
@@ -26,17 +26,25 @@
 			}
 			#logo {
 				position: absolute;
-				left: 20px; /* Posição horizontal da imagem em relação à margem esquerda */
-				top: 20px; /* Posição vertical da imagem em relação à margem superior */
+				left: 0.7%; /* Posição horizontal da imagem em relação à margem esquerda */
+				top: 84.2%; /* Posição vertical da imagem em relação à margem superior */
 				width: 100px; /* Largura da imagem */
 				height: 100px; /* Altura da imagem */
 				z-index: 2; 
 			}
 		</style>
 		<script 
-			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIa2njnlSILDb0CMxe9NhcJ7ZQgSiht-Y&v=beta&libraries=marker&callback=initMap&v=beta">
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACgKxrAX5zAD5nsC5KCvPF07tN1nXgUDE&v=beta&libraries=marker&callback=initMap&v=beta">
 		</script>
+    	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<script type="text/javascript" src="geoxml3.js"></script>
+		<script src="dist/geolib.js"></script>
+		<script src="dist/geolib.isPointInsideRobust.js"></script>
 		<script type="text/javascript" src="auth.js"></script>
+	</head>
+	<body>
+		<img id="logo" src="https://media.licdn.com/dms/image/C4E0BAQE-ZZaURHu6jQ/company-logo_200_200/0/1626287863241?e=1698883200&v=beta&t=IhPJKW9tC7i7nZjZloppNuAJkkF_uLB6tFmxIp7yaQk" alt="Logo da Empresa">
+		<div id="map"></div>
 		<script>
 			// Verifica a autenticação antes de executar qualquer código específico da página
 			const userAuth = auth.isAuthenticated();
@@ -45,45 +53,37 @@
 				// Redirecione para a página de login
 				window.location.href = "http://3.140.139.163/map/login.html";
 			}
-
-			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/UHMA'; // url API NodeJS local // Porta do PG // Modificar aqui conforme a usina
-			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHMA'; // url API NodeJS local // Porta do PG // Modificar aqui conforme a usina
+			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/UHMA';
+			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHMA';
+			// const urlPoligonoKML = 'http://3.140.139.163/map/UHMA.txt';
 			
 			// Variável global para armazenar informações
 			var allMarkers = [];
 
 			// Constantes globais
-			const COR_VERDE = '#00FF00';
-			const COR_VERMELHA = '#FF0000';
-			const COR_CINZA = '#818181';
+			const COR_VERDE = '#00FF00', COR_VERMELHA = '#FF0000', COR_CINZA = '#818181';
 
 			async function getData(URL) {
 				try {
-					const request = new XMLHttpRequest();
 					const timestamp = new Date().getTime(); // Generate a unique timestamp
-					const cacheBusterURL = URL + '?timestamp=' + timestamp; // usado para evitar cache do browser
-					request.open('GET', cacheBusterURL, false); // Make the request synchronous by passing false 
-					await request.send();
-					if (request.status === 200) {
-						const data = JSON.parse(request.responseText);
-						return data;
+					const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
+					const response = await axios.get(cacheBusterURL);
+					if (response.status === 200) {
+						return response.data;
 					} else {
-						console.log('Error getting data:', request.status);
+						console.log('Error getting data:', response.status);
 						return null;
 					}
 				} catch (error) {
-					console.log('Error getting data:', error);
+					console.log('Error getting data catch:', error);
 					return null;
 				}
 			}
 
 			// Função para criar o mapa
-			async function initMap() {				
-				var dadosUsinaApi = await getData(urlAPIUsina); // API <--> BD
-				var dadosEstacoesAPI = await getData(urlAPIEstacoes); // API <--> BD
-				var usina = dadosUsinaApi.usina;
-                
-				var marcadores =  dadosEstacoesAPI.estacoes;
+			async function initMap() {
+				var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getData(urlAPIUsina), getData(urlAPIEstacoes)]);
+				var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
 				console.log("dadosUsinaApi init: ", dadosUsinaApi);
 				console.log("dadosEstacoesAPI init: ", dadosEstacoesAPI);
 				
@@ -94,6 +94,14 @@
 					center: { lat: usina.lat, lng: usina.lng },
 					mapId: "19392f27b147b2cb",
 				});
+				
+				// const geoXml = new geoXML3.parser({
+				// 	map: map,
+				// 	singleInfoWindow: true
+				// });
+
+				// Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+				// geoXml.parse(urlPoligonoKML);
 
 				var tourStops = new Array();
 				for (var marcador of marcadores) {
@@ -143,16 +151,24 @@
 				tourStops.forEach(function({ position, title, label, content, cor }){
 					var popupContent = content;
 							
-					const pinView = new google.maps.marker.PinView({
-						glyph: label,
-						borderColor: '#FFFFFF',
-						background: cor,
-					});
-					const marker = new google.maps.marker.AdvancedMarkerView({
+					const marker = new google.maps.Marker({
 						position,
 						map,
 						title: title,
-						content: pinView.element,
+						icon: {
+							path: google.maps.SymbolPath.CIRCLE,
+							fillColor: cor,
+							fillOpacity: 1,
+							scale: 8,
+							strokeWeight: 1,
+							rotation: 0,
+            				labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
+						},
+						label: {
+							text: label,
+							color: 'black', // Cor do texto do label
+							fontWeight: 'bold' // Estilo do texto do label
+						}
 					});
 				
 					// Eventos de clique dos marcadores
@@ -188,11 +204,38 @@
 
 					// Mudar cor dos marcadores
 					if (i.sts_ping == false) {
-						marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_VERMELHA);
+						// marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_VERMELHA);
+						marcador.marker.setIcon({
+							path: google.maps.SymbolPath.CIRCLE,
+							fillColor: COR_VERMELHA,
+							fillOpacity: 1,
+							scale: 8,
+							strokeWeight: 1,
+							rotation: 0,
+							labelOrigin: new google.maps.Point(-0.05, -2),
+						});
 					} else if (i.sts_ping == true) {
-						marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_VERDE);
+						// marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_VERDE);
+						marcador.marker.setIcon({
+							path: google.maps.SymbolPath.CIRCLE,
+							fillColor: COR_VERDE,
+							fillOpacity: 1,
+							scale: 8,
+							strokeWeight: 1,
+							rotation: 0,
+							labelOrigin: new google.maps.Point(-0.05, -2),
+						});
 					} else {
-						marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_CINZA);
+						// marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_CINZA);
+						marcador.marker.setIcon({
+							path: google.maps.SymbolPath.CIRCLE,
+							fillColor: COR_CINZA,
+							fillOpacity: 1,
+							scale: 8,
+							strokeWeight: 1,
+							rotation: 0,
+							labelOrigin: new google.maps.Point(-0.05, -2),
+						});
 					}
 					
 					var infoArray = [`${i.timestamp_eqp}`];
@@ -289,8 +332,8 @@
 				}
 				return html;
 			}
-
-			window.setInterval(updateMap, 15000); // Atualiza mapa a cada 15000 milisegundos (15 segundos)
+			
+			window.setInterval(updateMap, 45000); // Atualiza mapa a cada 45000 milisegundos (45 segundos)
 
 			window.addEventListener('beforeunload', function () {
 				// Define a variável isAuthenticated como false ao fechar a página
@@ -298,9 +341,5 @@
 			});
 
 		</script>
-	</head>
-	<body>
-		<img id="logo" src="https://media.licdn.com/dms/image/C4E0BAQE-ZZaURHu6jQ/company-logo_200_200/0/1626287863241?e=1698883200&v=beta&t=IhPJKW9tC7i7nZjZloppNuAJkkF_uLB6tFmxIp7yaQk" alt="Logo da Empresa">
-		<div id="map"></div>
 	</body>
 </html>
