@@ -150,7 +150,7 @@
 				var pops = dadosPop.pops;
 				console.log("usina init: ", dadosUsinaApi);
 				console.log("marcadores init: ", dadosEstacoesAPI);
-				console.log("dadosPop init: ", dadosPop);
+				console.log("dadosPop init: ", pops);
 				
 				document.title = usina.descrp;
 				
@@ -217,9 +217,9 @@
 					];
 					var position = { lat: marcador.lat, lng: marcador.lng };
 					var cor;
-					if (marcador.sts_ping == 'False') {
+					if (marcador.sts_ping == false) {
 						cor = '#FF0000'; // Cor vermelha
-					} else if (marcador.sts_ping == 'True') {
+					} else if (marcador.sts_ping == true) {
 						cor = '#00FF00'; // Cor verde
 					} else {
 						cor = '#818181'; // Cor cinza
