@@ -256,7 +256,7 @@
 						position: position,
 						title: marcador.proprietario,
                         label: marcador.ponto,
-						content: criaPopupPop(marcador.proprietario, position, datas, marcador.url_foto),
+						content: criaPopupPop(marcador.proprietario, position, datas, marcador.url_foto || ["", ""]),
 					};
 
 					tourPopulation.push(obj);
