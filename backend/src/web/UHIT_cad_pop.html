@@ -100,7 +100,7 @@
 			}
 
 			const urlJSON = 'http://3.140.139.163/map/UHIT.JSON';
-			// const urlAPIUsinas = 'http://54.94.47.11:3000/usinas';
+			// const urlAPIUsinas = 'http://54.94.47.11:3000/usinas/UHIT';
 			// const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHIT';
 			// const urlAPIPop = 'http://54.94.47.11:3000/cad_pop/UHIT';
 			const urlPoligonoKML = 'http://3.140.139.163/map/UHIT.txt';
@@ -133,7 +133,7 @@
 			async function initMap() {
 				var dadosE3 = await getData(urlJSON);
 				// var dadosPop = await getData(urlAPIPop); // DESCOMENTAR DEPOIS
-				// const  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getData(urlJSON), getData(urlAPIPop)]);
+				// const  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getData(urlAPIUsinas), getData(urlAPIEstacoes)]);
 				var usina = dadosE3.usina;
 				var marcadores =  dadosE3.estacoes;
 				var dadosPop = { // Simulando dados da API em um JSON fixo // Remover depois
