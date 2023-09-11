@@ -6,8 +6,8 @@ const connection = require('../connection');
 
 const getPops = async (usina) => {
     await connection.connect();
-    // const pops = await connection.query(`SELECT * FROM ${usina.toLowerCase()}_cad_pop`);
-    const pops = await connection.query(`SELECT * FROM cad_pop`);
+    const pops = await connection.query(`SELECT * FROM ${usina.toLowerCase()}_cad_pop`);
+    // const pops = await connection.query(`SELECT * FROM cad_pop`);
     return pops.rows;
 };
 

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>MAPA POP UHIT</title>
+		<title>MAPA POP UHIP</title>
 		<meta charset="UTF-8">
-		<style>            
+		<style>
 			#map {
 				position: relative;
 				width: 1870px;
@@ -99,11 +99,11 @@
 				window.location.href = "http://3.140.139.163/map/login.html";
 			}
 
-			const urlJSON = 'http://3.140.139.163/map/UHIT.JSON';
-			// const urlAPIUsinas = 'http://54.94.47.11:3000/usinas';
-			// const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHIT';
-			// const urlAPIPop = 'http://54.94.47.11:3000/cad_pop/UHIT';
-			const urlPoligonoKML = 'http://3.140.139.163/map/UHIT.txt';
+			// const urlJSON = 'http://3.140.139.163/map/UHIP.JSON';
+			const urlAPIUsinas = 'http://54.94.47.11:3000/usinas';
+			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHIP';
+			const urlAPIPop = 'http://54.94.47.11:3000/cad_pop/UHIP';
+			const urlPoligonoKML = 'http://3.140.139.163/map/UHIP.txt';
 			
 			// Variável global para armazenar informações
 			var allMarkers = [], imagemAtualIndex = 0, urlArray = [];
@@ -131,24 +131,25 @@
 			
 			// Função para criar o mapa
 			async function initMap() {
-				var dadosE3 = await getData(urlJSON);
-				// var dadosPop = await getData(urlAPIPop); // DESCOMENTAR DEPOIS
-				// const  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getData(urlJSON), getData(urlAPIPop)]);
-				var usina = dadosE3.usina;
-				var marcadores =  dadosE3.estacoes;
-				var dadosPop = { // Simulando dados da API em um JSON fixo // Remover depois
-					"pops":[
-						{
-							"id":1,"ponto":275,"foto":2917,"lat":-27.277978,"lng":-52.400008,"municipio":"Floripa","proprietario":"Levi Andrew","necessidades":"Não","construcao":"Alvenaria","modalidade":"Moradia","saneamento":"Esgoto, Caixa de agua","benfeitorias":"Churrasqueira","abrigo":"Não","telefone":"48999454663","animais":"Não","usina":"UHIT","quant_pessoas":"2 Adultos","url_foto":["https://i.ibb.co/PzTvJGM/perfil-levi.jpg"]
-						},{
-							"id":8,"ponto":274,"foto":2916,"lat":-27.297978,"lng":-52.410008,"municipio":"UFSC","proprietario":"Gustavo Frango","necessidades":"Não","construcao":"Alvenaria","modalidade":"Moradia","saneamento":"Esgoto, Caixa de agua","benfeitorias":"Churrasqueira","abrigo":"Não","telefone":"48999999999","animais":"Não","usina":"UHIT","quant_pessoas":"1 Adulto","url_foto":["https://i.ibb.co/b1JXw9f/frango.jpg"]
-						},{
-							"id":9,"ponto":273,"foto":2916,"lat":-27.297978,"lng":-52.415008,"municipio":"Itá","proprietario":"Teste","necessidades":"Não","construcao":"Alvenaria","modalidade":"Moradia","saneamento":"Esgoto, Caixa de agua","benfeitorias":"Churrasqueira","abrigo":"Não","telefone":"48999999999","animais":"Não","usina":"UHIT","quant_pessoas":"3 Crianças e 3 adultos","url_foto":["https://abii.com.br/wp-content/uploads/2022/06/28.png","https://i.ibb.co/PzTvJGM/perfil-levi.jpg","https://i.ibb.co/b1JXw9f/frango.jpg"]
-						}
-					]
-				};
+				// var dadosE3 = await getData(urlJSON);
+				var dadosPop = await getData(urlAPIPop); // DESCOMENTAR DEPOIS
+				const  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getData(urlJSON), getData(urlAPIPop)]);
+				var usina = dadosUsinaApi.usina;
+				var marcadores =  dadosEstacoesAPI.estacoes;
+				// var dadosPop = { // Simulando dados da API em um JSON fixo // Remover depois
+				// 	"pops":[
+				// 		{
+				// 			"id":1,"ponto":275,"foto":2917,"lat":-27.277978,"lng":-52.400008,"municipio":"Floripa","proprietario":"Levi Andrew","necessidades":"Não","construcao":"Alvenaria","modalidade":"Moradia","saneamento":"Esgoto, Caixa de agua","benfeitorias":"Churrasqueira","abrigo":"Não","telefone":"48999454663","animais":"Não","usina":"UHIP","quant_pessoas":"2 Adultos","url_foto":["https://i.ibb.co/PzTvJGM/perfil-levi.jpg"]
+				// 		},{
+				// 			"id":8,"ponto":274,"foto":2916,"lat":-27.297978,"lng":-52.410008,"municipio":"UFSC","proprietario":"Gustavo Frango","necessidades":"Não","construcao":"Alvenaria","modalidade":"Moradia","saneamento":"Esgoto, Caixa de agua","benfeitorias":"Churrasqueira","abrigo":"Não","telefone":"48999999999","animais":"Não","usina":"UHIP","quant_pessoas":"1 Adulto","url_foto":["https://i.ibb.co/b1JXw9f/frango.jpg"]
+				// 		},{
+				// 			"id":9,"ponto":273,"foto":2916,"lat":-27.297978,"lng":-52.415008,"municipio":"Itá","proprietario":"Teste","necessidades":"Não","construcao":"Alvenaria","modalidade":"Moradia","saneamento":"Esgoto, Caixa de agua","benfeitorias":"Churrasqueira","abrigo":"Não","telefone":"48999999999","animais":"Não","usina":"UHIP","quant_pessoas":"3 Crianças e 3 adultos","url_foto":["https://abii.com.br/wp-content/uploads/2022/06/28.png","https://i.ibb.co/PzTvJGM/perfil-levi.jpg","https://i.ibb.co/b1JXw9f/frango.jpg"]
+				// 		}
+				// 	]
+				// };
 				var pops = dadosPop.pops;
-				console.log("dadosE3 init: ", dadosE3);
+				console.log("usina init: ", dadosUsinaApi);
+				console.log("marcadores init: ", dadosEstacoesAPI);
 				console.log("dadosPop init: ", dadosPop);
 				
 				document.title = usina.descrp;
