@@ -56,7 +56,7 @@
 			}
 			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/UHPF';
 			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHPF';
-			// const urlPoligonoKML = 'http://3.140.139.163/map/UHPF.txt';
+			const urlPoligonoKML = 'http://3.140.139.163/map/UHPF.txt';
 			
 			// Variável global para armazenar informações
 			var allMarkers = [];
@@ -96,13 +96,13 @@
 					mapId: "19392f27b147b2cb",
 				});
 				
-				// const geoXml = new geoXML3.parser({
-				// 	map: map,
-				// 	singleInfoWindow: true
-				// });
+				const geoXml = new geoXML3.parser({
+					map: map,
+					singleInfoWindow: true
+				});
 
 				// Carrega o arquivo KML e analisa as coordenadas para criar um polígono
-				// geoXml.parse(urlPoligonoKML);
+				geoXml.parse(urlPoligonoKML);
 
 				var tourStops = new Array();
 				for (var marcador of marcadores) {
