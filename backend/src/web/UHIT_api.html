@@ -48,12 +48,12 @@
 		<div id="map"></div>
 		<script type="text/javascript">
 			// Verifica a autenticação antes de executar qualquer código específico da página
-			// const userAuth = auth.isAuthenticated();
-			// console.log("Auth mapa: ", userAuth);
-			// if (!userAuth) {
-			// 	// Redirecione para a página de login
-			// 	window.location.href = "http://3.140.139.163/map/login.html";
-			// }
+			const userAuth = auth.isAuthenticated();
+			console.log("Auth mapa: ", userAuth);
+			if (!userAuth) {
+				// Redirecione para a página de login
+				window.location.href = "http://3.140.139.163/map/login.html";
+			}
 			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/UHIT';
 			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHIT';
 			const urlPoligonoKML = 'http://3.140.139.163/map/UHIT.txt';
