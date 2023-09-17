@@ -57,6 +57,7 @@
 			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/UHPF';
 			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHPF';
 			const urlPoligonoKML = 'http://3.140.139.163/map/UHPF.txt';
+			const urlCasasKML = 'http://3.140.139.163/map/coordenadas_pop/casas_uhpf.txt';
 			
 			// Variável global para armazenar informações
 			var allMarkers = [];
@@ -186,7 +187,43 @@
 				function getPopupContent(markerLabel) {
 					var element = allMarkers.find(element => element.label == markerLabel);
 					return element.popupContent;
-				}        
+				}
+				
+				// Cria marcadores das casas
+				fetch(urlCasasKML)
+					.then(response => {
+						// Verifique se a resposta da solicitação HTTP é bem-sucedida (status 200 OK)
+						if (!response.ok) {
+						throw new Error(`Erro ao buscar o arquivo KML. Status: ${response.status}`);
+						}
+						// Parse a resposta como texto
+						return response.text();
+					})
+					.then(data => {
+						// Agora, você pode chamar sua função para extrair as coordenadas do KML
+						const listaDeCoordenadas = extrairCoordenadasDoKML(data);
+						
+						// Faça o que quiser com a lista de coordenadas
+						console.log("listaDeCoordenadas: ", listaDeCoordenadas);
+						
+						// Cria os marcadores das Residências
+						listaDeCoordenadas.forEach(function({ position, label }){
+							// Define a URL da imagem do ícone personalizado
+							const customIconUrl = 'https://i.ibb.co/92SF1H4/casa.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/
+							const marker = new google.maps.Marker({
+							position,
+							map,
+							icon: {
+								url: customIconUrl,
+								scaledSize: new google.maps.Size(16, 16), // Tamanho do ícone
+								anchor: new google.maps.Point(8, 16), // Ponto de ancoragem (ponto no meio inferior da imagem)
+							},
+							});
+						});
+					})
+					.catch(error => {
+						console.error('Erro ao buscar o arquivo KML:', error);
+					});
 			}
 
 			// Atualiza os dados do mapa dinamicamente
@@ -340,6 +377,37 @@
 				// Define a variável isAuthenticated como false ao fechar a página
 				auth.setAuthenticated(false);
 			});
+			
+			function extrairCoordenadasDoKML(textoKML) {
+				const parser = new DOMParser();
+				const docKML = parser.parseFromString(textoKML, 'text/xml');
+
+				// Encontrar todos os elementos Placemark no KML
+				const placemarks = docKML.querySelectorAll('Placemark');
+				
+				const listaDeCoordenadas = [];
+				let i = 1;
+				placemarks.forEach((placemark) => {
+					// Extrair as coordenadas de cada Placemark
+					const coordenadas = placemark.querySelector('coordinates').textContent;
+					
+					// Dividir as coordenadas em um array de pares [longitude, latitude]
+					const paresDeCoordenadas = coordenadas.split(' ');
+
+					const arrayDeCoordenadas = paresDeCoordenadas.map((par) => {
+						const [lng, lat] = par.split(',');
+						return [parseFloat(lng), parseFloat(lat)]
+					});
+					const coord = arrayDeCoordenadas[0];
+					listaDeCoordenadas.push({
+						label: i,
+						position: {lat: coord[1], lng: coord[0]},
+					});
+					i = i+1;
+				});
+
+				return listaDeCoordenadas;
+			}
 
 		</script>
 	</body>
