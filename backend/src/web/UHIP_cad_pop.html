@@ -104,6 +104,7 @@
 			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHIP';
 			const urlAPIPop = 'http://54.94.47.11:3000/cad_pop/UHIP';
 			const urlPoligonoKML = 'http://3.140.139.163/map/UHIP.txt';
+			const urlPontosEncrontoKML = 'http://3.140.139.163/map/coordenadas_pop/ponto_encontro_uhip.txt';
 			
 			// Variável global para armazenar informações
 			var allMarkers = [], imagemAtualIndex = 0, urlArray = [];
@@ -136,17 +137,6 @@
 				const  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getData(urlAPIUsinas), getData(urlAPIEstacoes)]);
 				var usina = dadosUsinaApi.usina;
 				var marcadores =  dadosEstacoesAPI.estacoes;
-				// var dadosPop = { // Simulando dados da API em um JSON fixo // Remover depois
-				// 	"pops":[
-				// 		{
-				// 			"id":1,"ponto":275,"foto":2917,"lat":-27.277978,"lng":-52.400008,"municipio":"Floripa","proprietario":"Levi Andrew","necessidades":"Não","construcao":"Alvenaria","modalidade":"Moradia","saneamento":"Esgoto, Caixa de agua","benfeitorias":"Churrasqueira","abrigo":"Não","telefone":"48999454663","animais":"Não","usina":"UHIP","quant_pessoas":"2 Adultos","url_foto":["https://i.ibb.co/PzTvJGM/perfil-levi.jpg"]
-				// 		},{
-				// 			"id":8,"ponto":274,"foto":2916,"lat":-27.297978,"lng":-52.410008,"municipio":"UFSC","proprietario":"Gustavo Frango","necessidades":"Não","construcao":"Alvenaria","modalidade":"Moradia","saneamento":"Esgoto, Caixa de agua","benfeitorias":"Churrasqueira","abrigo":"Não","telefone":"48999999999","animais":"Não","usina":"UHIP","quant_pessoas":"1 Adulto","url_foto":["https://i.ibb.co/b1JXw9f/frango.jpg"]
-				// 		},{
-				// 			"id":9,"ponto":273,"foto":2916,"lat":-27.297978,"lng":-52.415008,"municipio":"Itá","proprietario":"Teste","necessidades":"Não","construcao":"Alvenaria","modalidade":"Moradia","saneamento":"Esgoto, Caixa de agua","benfeitorias":"Churrasqueira","abrigo":"Não","telefone":"48999999999","animais":"Não","usina":"UHIP","quant_pessoas":"3 Crianças e 3 adultos","url_foto":["https://abii.com.br/wp-content/uploads/2022/06/28.png","https://i.ibb.co/PzTvJGM/perfil-levi.jpg","https://i.ibb.co/b1JXw9f/frango.jpg"]
-				// 		}
-				// 	]
-				// };
 				var pops = dadosPop.pops;
 				console.log("usina init: ", dadosUsinaApi);
 				console.log("marcadores init: ", dadosEstacoesAPI);
@@ -277,7 +267,7 @@
 							path: google.maps.SymbolPath.CIRCLE,
 							fillColor: cor,
 							fillOpacity: 1,
-							scale: 8,
+							scale: 9,
 							strokeWeight: 1,
 							rotation: 0,
             				labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
@@ -318,12 +308,45 @@
 					allMarkers.push({label: label, marker: marker, position: position, popupContent: popupContent});
 				});
 				
+				// Cria marcadores dos pontos de encontro
+				fetch(urlPontosEncrontoKML)
+					.then(response => {
+						// Verifique se a resposta da solicitação HTTP é bem-sucedida (status 200 OK)
+						if (!response.ok) {
+						throw new Error(`Erro ao buscar o arquivo KML. Status: ${response.status}`);
+						}
+						// Parse a resposta como texto
+						return response.text();
+					})
+					.then(data => {
+						// Agora, você pode chamar sua função para extrair as coordenadas do KML
+						const listaDeCoordenadasPE = extrairCoordenadasDoKML(data);
+						
+						// Cria os marcadores dos PE
+						listaDeCoordenadasPE.forEach(function({ position, label, title }){
+							// Define a URL da imagem do ícone personalizado
+							const customIconUrl = 'https://i.ibb.co/g7ymSN1/maker-PE-sem-Fundo.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/
+							const marker = new google.maps.Marker({
+							position,
+							map,
+							title,
+							icon: {
+								url: customIconUrl,
+								scaledSize: new google.maps.Size(24, 24), // Tamanho do ícone
+								anchor: new google.maps.Point(12, 24), // Ponto de ancoragem (ponto no meio inferior da imagem)
+							},
+							});
+						});
+					})
+					.catch(error => {
+						console.error('Erro ao buscar o arquivo KML:', error);
+					});
+
 				// Função privada para obter o conteúdo HTML das janelas popup
 				function getPopupContent(markerLabel) {
 					var element = allMarkers.find(element => element.label == markerLabel);
 					return element.popupContent;
 				}
-				
 			}
 
 			// Função para criar o conteúdo HTML das janelas popup
@@ -412,7 +435,41 @@
 					xhr.send();
 				});
 			}
-			
+						
+			function extrairCoordenadasDoKML(textoKML) {
+				const parser = new DOMParser();
+				const docKML = parser.parseFromString(textoKML, 'text/xml');
+
+				// Encontrar todos os elementos Placemark no KML
+				const placemarks = docKML.querySelectorAll('Placemark');
+				
+				const listaDeCoordenadas = [];
+				let i = 1;
+				placemarks.forEach((placemark) => {
+					// Extrair as coordenadas de cada Placemark
+					const coordenadas = placemark.querySelector('coordinates').textContent;
+					const name = placemark.querySelector('name').textContent;
+					
+					// Dividir as coordenadas em um array de pares [longitude, latitude]
+					const paresDeCoordenadas = coordenadas.split(' ');
+
+					const arrayDeCoordenadas = paresDeCoordenadas.map((par) => {
+						const [lng, lat] = par.split(',');
+						return [parseFloat(lng), parseFloat(lat)]
+					});					
+
+					const coord = arrayDeCoordenadas[0];
+					listaDeCoordenadas.push({
+						label: i,
+						position: {lat: coord[1], lng: coord[0]},
+						title: name
+					});
+					i = i+1;
+				});
+
+				return listaDeCoordenadas;
+			}
+
 			window.addEventListener('beforeunload', function () {
 				// Define a variável isAuthenticated como false ao fechar a página
 				auth.setAuthenticated(false);

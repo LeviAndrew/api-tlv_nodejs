@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+    <Placemark><name>MG-01</name><Point><coordinates>-47.7606371228423,-19.98208065518022,500.9500000000001</coordinates></Point></Placemark>
+    <Placemark><name>MG-02</name><Point><coordinates>-47.76987371914437,-19.98272200906855,514.21</coordinates></Point></Placemark>
+    <Placemark><name>MG-03</name><Point><coordinates>-47.77239395911343,-19.98375699440364,514.43</coordinates></Point></Placemark>
+    <Placemark><name>MG-04</name><Point><coordinates>-47.77210469811049,-19.97977993029309,508.42</coordinates></Point></Placemark>
+    <Placemark><name>MG-05</name><Point><coordinates>-47.77219523872581,-19.97731371997049,518.69</coordinates></Point></Placemark>
+    <Placemark><name>MG-06</name><Point><coordinates>-47.7974409981584,-19.97981518281928,525.09</coordinates></Point></Placemark>
+    <Placemark><name>MG-07</name><Point><coordinates>-47.80662934741485,-19.98097901835558,499.5199999999999</coordinates></Point></Placemark>
+    <Placemark><name>MG-08</name><Point><coordinates>-47.80982733423656,-19.97983591401393,521.28</coordinates></Point></Placemark>
+    <Placemark><name>MG-09</name><Point><coordinates>-47.81419277610613,-19.98044376942699,512.23</coordinates></Point></Placemark>
+    <Placemark><name>MG-10</name><Point><coordinates>-47.82135829447714,-19.98062776937352,516.18</coordinates></Point></Placemark>
+    <Placemark><name>MG-11</name><Point><coordinates>-47.82733699769568,-19.9795935495208,519.4</coordinates></Point></Placemark>
+    <Placemark><name>Ponto de Encontro - UHE Igarapava 01</name><Point><coordinates>-47.76163270356305,-19.994262787442,514.07</coordinates></Point></Placemark>
+    <Placemark><name>SP-02</name><Point><coordinates>-47.76240425678591,-19.99304995265668,514.07</coordinates></Point></Placemark>
+    <Placemark><name>SP-03</name><Point><coordinates>-47.76617868854424,-19.99370430611531,515.94</coordinates></Point></Placemark>
+    <Placemark><name>SP-04</name><Point><coordinates>-47.77637002467669,-19.99374348080551,519.3</coordinates></Point></Placemark>
+    <Placemark><name>SP-05</name><Point><coordinates>-47.78140436567298,-19.9916330880088,511.3099999999999</coordinates></Point></Placemark>
+    <Placemark><name>SP-06</name><Point><coordinates>-47.78515417303282,-19.99088800606926,510.91</coordinates></Point></Placemark>
+    <Placemark><name>SP-07</name><Point><coordinates>-47.7911720088077,-19.99203018247078,513.25</coordinates></Point></Placemark>
+    <Placemark><name>SP-08</name><Point><coordinates>-47.79545580601528,-19.99178206125874,509.8</coordinates></Point></Placemark>
+    <Placemark><name>SP-09</name><Point><coordinates>-47.80458277717258,-19.99267604947684,521.52</coordinates></Point></Placemark>
+    <Placemark><name>SP-10</name><Point><coordinates>-47.81173590668593,-19.99212928644711,516.76</coordinates></Point></Placemark>
+    <Placemark><name>SP-11</name><Point><coordinates>-47.81817260944537,-19.99372430911964,516.85</coordinates></Point></Placemark>
+    <Placemark><name>SP-12</name><Point><coordinates>-47.84528526173601,-19.9963333106425,568.66</coordinates></Point></Placemark>
+    <Placemark><name>SP-13</name><Point><coordinates>-47.85225907908374,-19.99432523792963,513.71</coordinates></Point></Placemark>
+    <Placemark><name>SP-14</name><Point><coordinates>-47.85618787095937,-19.99770160497801,505.8299999999999</coordinates></Point></Placemark>
+    <Placemark><name>SP-15</name><Point><coordinates>-47.85910155736818,-20.00250263014981,513.3</coordinates></Point></Placemark>
+    <Placemark><name>SP-16</name><Point><coordinates>-47.86050744089584,-20.01633789895698,504.7599999999999</coordinates></Point></Placemark>
+    <Placemark><name>URA-01</name><Point><coordinates>-47.86271239738609,-19.97454776100761,532.77</coordinates></Point></Placemark>
+    <Placemark><name>URA-02</name><Point><coordinates>-47.87668373005127,-20.00299423101934,517.28</coordinates></Point></Placemark>
+</kml>
