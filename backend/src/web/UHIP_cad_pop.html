@@ -104,6 +104,7 @@
 			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHIP';
 			const urlAPIPop = 'http://54.94.47.11:3000/cad_pop/UHIP';
 			const urlPoligonoKML = 'http://3.140.139.163/map/UHIP.txt';
+			const urlRotasKML = 'http://3.140.139.163/map/coordenadas_pop/rotas_fuga_uhip.txt';
 			const urlPontosEncrontoKML = 'http://3.140.139.163/map/coordenadas_pop/ponto_encontro_uhip.txt';
 			
 			// Variável global para armazenar informações
@@ -152,11 +153,26 @@
 
 				const geoXml = new geoXML3.parser({
 					map: map,
-					singleInfoWindow: true
 				});
 
-				// Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+				// Carrega o arquivo KML do polígono da ÁREA INUNDÁVEL
 				geoXml.parse(urlPoligonoKML);
+
+				 // Carregue o arquivo KML e adicione a rota ao mapa
+				 fetch(urlRotasKML)
+                .then((response) => response.text())
+                .then((kmlData) => {
+					// Carrega o arquivo KML das ROTAS DE FUGA
+					geoXml.parseKmlString(kmlData);
+					// Coordenadas removidas
+					// <Placemark><name>BR 050</name><Point><coordinates>-47.78813416269598,-19.98547822954861,0</coordinates></Point></Placemark><Placemark><name>Fosfertil</name><Point><coordinates>-47.87688238164778,-19.98502546155629,0</coordinates></Point></Placemark><Placemark><name>Delta</name><Point><coordinates>-47.77549384460837,-19.97372291260062,0</coordinates></Point></Placemark><Placemark><name>BR 464</name><Point><coordinates>-47.81009725152034,-19.97890171688396,0</coordinates></Point></Placemark><Placemark><name>Porto de Areia</name><Point><coordinates>-47.87200674159876,-20.00735843000622,0</coordinates></Point></Placemark><Placemark><name>Coutry Clube</name><Point><coordinates>-47.76807136414112,-19.98451074349539,0</coordinates></Point></Placemark>
+					// <Placemark><name>BR 050</name><Point><coordinates>-47.78813416269598,-19.98547822954861,0</coordinates></Point></Placemark><Placemark><name>Fosfertil</name><Point><coordinates>-47.87688238164778,-19.98502546155629,0</coordinates></Point></Placemark><Placemark><name>Delta</name><Point><coordinates>-47.77549384460837,-19.97372291260062,0</coordinates></Point></Placemark><Placemark><name>BR 464</name><Point><coordinates>-47.81009725152034,-19.97890171688396,0</coordinates></Point></Placemark><Placemark><name>Porto de Areia</name><Point><coordinates>-47.87200674159876,-20.00735843000622,0</coordinates></Point></Placemark><Placemark><name>Coutry Clube</name><Point><coordinates>-47.76807136414112,-19.98451074349539,0</coordinates></Point></Placemark>
+					// <Placemark><name>Cerâminca</name><Point><coordinates>-47.77849688099406,-19.99139883355228,0</coordinates></Point></Placemark><Placemark><name>BR 050</name><Point><coordinates>-47.78813416269598,-19.98547822954861,0</coordinates></Point></Placemark>
+					// <Placemark><name>Fertigran</name><Point><coordinates>-47.76484567774617,-19.99229860299679,0</coordinates></Point></Placemark><Placemark><name>Fosfertil</name><Point><coordinates>-47.87688238164778,-19.98502546155629,0</coordinates></Point></Placemark><Placemark><name>Raízen</name><Point><coordinates>-47.7993594386007,-19.98893967228874,0</coordinates></Point></Placemark>
+                })
+                .catch((error) => {
+                    console.error("Erro ao carregar o arquivo KML:", error);
+                });
 
 				// Verifica se ponto de coordenada está dentro do Polígono
 				loadKmlFileAndExtractPolygonCoordinates(urlPoligonoKML)
