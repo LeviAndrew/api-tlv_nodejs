@@ -175,39 +175,39 @@
                 });
 
 				// Verifica se ponto de coordenada está dentro do Polígono
-				loadKmlFileAndExtractPolygonCoordinates(urlPoligonoKML)
-				.then(polygonCoordinates => {
-					// Agora você tem as coordenadas do polígono
-					console.log('Coordenadas do polígono:', polygonCoordinates);
+				// loadKmlFileAndExtractPolygonCoordinates(urlPoligonoKML)
+				// .then(polygonCoordinates => {
+				// 	// Agora você tem as coordenadas do polígono
+				// 	console.log('Coordenadas do polígono:', polygonCoordinates);
 					
-					// Verificar se um ponto está dentro do polígono
-					const pontoTeste = { lat: -27.277978, lng: -52.388827 }, pontoTeste2 = { lat: -27.281806, lng: -52.392326 }, pontoTeste3 = { lat: -27.306581, lng: -52.392388 };
-					const pontoEstaDentroDoPoligono = geolib.isPointInside(pontoTeste, polygonCoordinates);
-					const pontoEstaDentroDoPoligono2 = geolib.isPointInside(pontoTeste2, polygonCoordinates);
-					const pontoEstaDentroDoPoligono3 = geolib.isPointInside(pontoTeste3, polygonCoordinates);
-					console.log("testes:", pontoEstaDentroDoPoligono, pontoEstaDentroDoPoligono2, pontoEstaDentroDoPoligono3);
-					if (pontoEstaDentroDoPoligono) {
-						console.log('O ponto 1 está dentro do polígono.');
-					} else {
-						console.log('O ponto 1 está fora do polígono.');
-					}
+				// 	// Verificar se um ponto está dentro do polígono
+				// 	const pontoTeste = { lat: -27.277978, lng: -52.388827 }, pontoTeste2 = { lat: -27.281806, lng: -52.392326 }, pontoTeste3 = { lat: -27.306581, lng: -52.392388 };
+				// 	const pontoEstaDentroDoPoligono = geolib.isPointInside(pontoTeste, polygonCoordinates);
+				// 	const pontoEstaDentroDoPoligono2 = geolib.isPointInside(pontoTeste2, polygonCoordinates);
+				// 	const pontoEstaDentroDoPoligono3 = geolib.isPointInside(pontoTeste3, polygonCoordinates);
+				// 	console.log("testes:", pontoEstaDentroDoPoligono, pontoEstaDentroDoPoligono2, pontoEstaDentroDoPoligono3);
+				// 	if (pontoEstaDentroDoPoligono) {
+				// 		console.log('O ponto 1 está dentro do polígono.');
+				// 	} else {
+				// 		console.log('O ponto 1 está fora do polígono.');
+				// 	}
 					
-					if (pontoEstaDentroDoPoligono2) {
-						console.log('O ponto 2 está dentro do polígono.');
-					} else {
-						console.log('O ponto 2 está fora do polígono.');
-					}
+				// 	if (pontoEstaDentroDoPoligono2) {
+				// 		console.log('O ponto 2 está dentro do polígono.');
+				// 	} else {
+				// 		console.log('O ponto 2 está fora do polígono.');
+				// 	}
 					
-					if (pontoEstaDentroDoPoligono3) {
-						console.log('O ponto 3 está dentro do polígono.');
-					} else {
-						console.log('O ponto 3 está fora do polígono.');
-					}
+				// 	if (pontoEstaDentroDoPoligono3) {
+				// 		console.log('O ponto 3 está dentro do polígono.');
+				// 	} else {
+				// 		console.log('O ponto 3 está fora do polígono.');
+				// 	}
 
-				})
-				.catch(error => {
-					console.error('Erro:', error);
-				});
+				// })
+				// .catch(error => {
+				// 	console.error('Erro:', error);
+				// });
 
 				var tourStops = new Array();
 				for (var marcador of marcadores) {
