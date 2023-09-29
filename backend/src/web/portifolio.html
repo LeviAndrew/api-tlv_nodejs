@@ -100,10 +100,8 @@
                 
 			    // Função para criar o mapa
 		        async function initMap() {
-                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUHIT(urlAPIUsinaUHIT), getDataUHIT(urlAPIEstacoesUHIT)]);
-                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
-                    
-                    document.title = usina.e3_label;
+                    var  [dadosUsinaApiUHIT, dadosEstacoesAPIUHIT] = await Promise.all([getDataUHIT(urlAPIUsinaUHIT), getDataUHIT(urlAPIEstacoesUHIT)]);
+                    var usina = dadosUsinaApiUHIT.usina, marcadores =  dadosEstacoesAPIUHIT.estacoes;
                     
                     const map1 = new google.maps.Map(document.getElementById("map1"), { // Chamada da API do Google Maps -> Gera o Mapa
                         zoom: usina.zoom,
@@ -250,10 +248,8 @@
                 
 			    // Função para criar o mapa
 		        async function initUHMA() {
-                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUHMA(urlAPIUsinaUHMA), getDataUHMA(urlAPIEstacoesUHMA)]);
-                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
-                    
-                    document.title = usina.e3_label;
+                    var  [dadosUsinaApiUHMA, dadosEstacoesAPIUHMA] = await Promise.all([getDataUHMA(urlAPIUsinaUHMA), getDataUHMA(urlAPIEstacoesUHMA)]);
+                    var usina = dadosUsinaApiUHMA.usina, marcadores =  dadosEstacoesAPIUHMA.estacoes;
                     
                     const map2 = new google.maps.Map(document.getElementById("map2"), { // Chamada da API do Google Maps -> Gera o Mapa
                         zoom: usina.zoom,
@@ -402,10 +398,8 @@
                 
 			    // Função para criar o mapa
 		        async function initUHPF() {
-                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUHPF(urlAPIUsinaUHPF), getDataUHPF(urlAPIEstacoesUHPF)]);
-                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
-                    
-                    document.title = usina.e3_label;
+                    var  [dadosUsinaApiUHPF, dadosEstacoesAPIUHPF] = await Promise.all([getDataUHPF(urlAPIUsinaUHPF), getDataUHPF(urlAPIEstacoesUHPF)]);
+                    var usina = dadosUsinaApiUHPF.usina, marcadores =  dadosEstacoesAPIUHPF.estacoes;
                     
                     const map3 = new google.maps.Map(document.getElementById("map3"), { // Chamada da API do Google Maps -> Gera o Mapa
                         zoom: usina.zoom,
@@ -553,10 +547,8 @@
                 
 			    // Função para criar o mapa
 		        async function initUHIP() {
-                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUHIP(urlAPIUsinaUHIP), getDataUHIP(urlAPIEstacoesUHIP)]);
-                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
-                    
-                    document.title = usina.e3_label;
+                    var  [dadosUsinaApiUHIP, dadosEstacoesAPIUHIP] = await Promise.all([getDataUHIP(urlAPIUsinaUHIP), getDataUHIP(urlAPIEstacoesUHIP)]);
+                    var usina = dadosUsinaApiUHIP.usina, marcadores =  dadosEstacoesAPIUHIP.estacoes;
                     
                     const map4 = new google.maps.Map(document.getElementById("map4"), { // Chamada da API do Google Maps -> Gera o Mapa
                         zoom: usina.zoom,
@@ -670,10 +662,8 @@
                 
 			    // Função para criar o mapa
 		        async function initUHAI() {
-                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUHAI(urlAPIUsinaUHAI), getDataUHAI(urlAPIEstacoesUHAI)]);
-                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
-                    
-                    document.title = usina.e3_label;
+                    var  [dadosUsinaApiUHAI, dadosEstacoesAPIUHAI] = await Promise.all([getDataUHAI(urlAPIUsinaUHAI), getDataUHAI(urlAPIEstacoesUHAI)]);
+                    var usina = dadosUsinaApiUHAI.usina, marcadores =  dadosEstacoesAPIUHAI.estacoes;
                     
                     const map5 = new google.maps.Map(document.getElementById("map5"), { // Chamada da API do Google Maps -> Gera o Mapa
                         zoom: usina.zoom,
@@ -791,10 +781,8 @@
                 
 			    // Função para criar o mapa
 		        async function initUTPS() {
-                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUTPS(urlAPIUsinaUTPS), getDataUTPS(urlAPIEstacoesUTPS)]);
-                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
-                    
-                    document.title = usina.e3_label;
+                    var  [dadosUsinaApiUTPS, dadosEstacoesAPIUTPS] = await Promise.all([getDataUTPS(urlAPIUsinaUTPS), getDataUTPS(urlAPIEstacoesUTPS)]);
+                    var usina = dadosUsinaApiUTPS.usina, marcadores =  dadosEstacoesAPIUTPS.estacoes;
                     
                     const map7 = new google.maps.Map(document.getElementById("map7"), { // Chamada da API do Google Maps -> Gera o Mapa
                         zoom: usina.zoom,
@@ -905,6 +893,7 @@
             <!-- Inclua aqui o código para o seu oitavo mapa -->
             <h1>Teste</h1>
         </div>
+        
 		<script type="text/javascript">
             // Verifica a autenticação antes de executar qualquer código específico da página
             const userAuth = auth.isAuthenticated();
@@ -913,6 +902,8 @@
                 // Redirecione para a página de login
                 window.location.href = "http://3.140.139.163/map/login.html";
             }
+                    
+            document.title = "Portifólio TLV";
 
             // Constantes globais
             const COR_VERDE = '#00FF00', COR_VERMELHA = '#FF0000', COR_CINZA = '#818181';
