@@ -100,7 +100,7 @@
                 
 			    // Função para criar o mapa
 		        async function initMap() {
-                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getData(urlAPIUsinaUHIT), getData(urlAPIEstacoesUHIT)]);
+                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUHIT(urlAPIUsinaUHIT), getDataUHIT(urlAPIEstacoesUHIT)]);
                     var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
                     
                     document.title = usina.e3_label;
@@ -219,6 +219,24 @@
                         });
 
                 }
+
+                async function getDataUHIT(URL) {
+                    try {
+                        const timestamp = new Date().getTime(); // Generate a unique timestamp
+                        const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
+                        const response = await axios.get(cacheBusterURL);
+                        if (response.status === 200) {
+                            return response.data;
+                        } else {
+                            console.log('Error getting data:', response.status);
+                            return null;
+                        }
+                    } catch (error) {
+                        console.log('Error getting data catch:', error);
+                        return null;
+                    }
+                }
+
             </script>
         </div>
     
@@ -898,23 +916,6 @@
 
             // Constantes globais
             const COR_VERDE = '#00FF00', COR_VERMELHA = '#FF0000', COR_CINZA = '#818181';
-
-            async function getData(URL) {
-                try {
-                    const timestamp = new Date().getTime(); // Generate a unique timestamp
-                    const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
-                    const response = await axios.get(cacheBusterURL);
-                    if (response.status === 200) {
-                        return response.data;
-                    } else {
-                        console.log('Error getting data:', response.status);
-                        return null;
-                    }
-                } catch (error) {
-                    console.log('Error getting data catch:', error);
-                    return null;
-                }
-            }
             
 			function extrairCoordenadasDoKML(textoKML) {
 				const parser = new DOMParser();
