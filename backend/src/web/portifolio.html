@@ -228,7 +228,7 @@
                 const urlAPIUsinaUHMA = 'http://54.94.47.11:3000/usinas/UHMA';
                 const urlAPIEstacoesUHMA = 'http://54.94.47.11:3000/estacoes/UHMA';
                 const urlPoligonoKMLUHMA = 'http://3.140.139.163/map/UHMA.txt';
-                const urlCasasKMLUHMA = 'http://3.140.139.163/map/coordenadas_pop/casas_uhit.txt';
+                const urlCasasKMLUHMA = 'http://3.140.139.163/map/coordenadas_pop/casas_uhma.txt';
                 
 			    // Função para criar o mapa
 		        async function initUHMA() {
@@ -380,7 +380,7 @@
                 const urlAPIUsinaUHPF = 'http://54.94.47.11:3000/usinas/UHPF';
                 const urlAPIEstacoesUHPF = 'http://54.94.47.11:3000/estacoes/UHPF';
                 const urlPoligonoKMLUHPF = 'http://3.140.139.163/map/UHPF.txt';
-                const urlCasasKMLUHPF = 'http://3.140.139.163/map/coordenadas_pop/casas_uhit.txt';
+                const urlCasasKMLUHPF = 'http://3.140.139.163/map/coordenadas_pop/casas_uhpf.txt';
                 
 			    // Função para criar o mapa
 		        async function initUHPF() {
@@ -532,7 +532,6 @@
                 const urlAPIUsinaUHIP = 'http://54.94.47.11:3000/usinas/UHIP';
                 const urlAPIEstacoesUHIP = 'http://54.94.47.11:3000/estacoes/UHIP';
                 const urlPoligonoKMLUHIP = 'http://3.140.139.163/map/UHIP.txt';
-                const urlCasasKMLUHIP = 'http://3.140.139.163/map/coordenadas_pop/casas_uhit.txt';
                 
 			    // Função para criar o mapa
 		        async function initUHIP() {
@@ -620,39 +619,6 @@
                             }
                         });
                     });
-
-                    // Cria marcadores das casas
-                    fetch(urlCasasKMLUHIP)
-                        .then(response => {
-                            // Verifique se a resposta da solicitação HTTP é bem-sucedida (status 200 OK)
-                            if (!response.ok) {
-                            throw new Error(`Erro ao buscar o arquivo KML. Status: ${response.status}`);
-                            }
-                            // Parse a resposta como texto
-                            return response.text();
-                        })
-                        .then(data => {
-                            // Agora, você pode chamar sua função para extrair as coordenadas do KML
-                            const listaDeCoordenadas = extrairCoordenadasDoKML(data);
-                            
-                            // Cria os marcadores das Residências
-                            listaDeCoordenadas.forEach(function({ position, label }){
-                                // Define a URL da imagem do ícone personalizado
-                                const customIconUrl = 'https://i.ibb.co/92SF1H4/casa.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/
-                                const marker = new google.maps.Marker({
-                                position,
-                                map: map4,
-                                icon: {
-                                    url: customIconUrl,
-                                    scaledSize: new google.maps.Size(16, 16), // Tamanho do ícone
-                                    anchor: new google.maps.Point(8, 16), // Ponto de ancoragem (ponto no meio inferior da imagem)
-                                },
-                                });
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Erro ao buscar o arquivo KML:', error);
-                        });
 
                 }
 
@@ -795,7 +761,7 @@
         <!-- Mapa 6 -->
         <div id="map6" class="map-container">
             <!-- Inclua aqui o código para o seu sexto mapa -->
-            <h1>Teste 5</h1>
+            <h1>UHIP CAD POP (em dev...)</h1>
         </div>
     
         <!-- Mapa 7 -->
@@ -804,7 +770,6 @@
                 const urlAPIUsinaUTPS = 'http://54.94.47.11:3000/usinas/UTPS';
                 const urlAPIEstacoesUTPS = 'http://54.94.47.11:3000/estacoes/UTPS';
                 const urlPoligonoKMLUTPS = 'http://3.140.139.163/map/UTPS.txt';
-                const urlCasasKMLUTPS = 'http://3.140.139.163/map/coordenadas_pop/casas_uhit.txt';
                 
 			    // Função para criar o mapa
 		        async function initUTPS() {
