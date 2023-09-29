@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Portifólio</title>
+		<meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style>
+			#map {
+				width: 1870px;
+				height: 910px;
+			}
+			.measure-parameters {
+				max-width: 400px;
+				display: flex;
+				flex-wrap: wrap;
+				font-family: Arial, Helvetica, sans-serif;
+				text-align: center;
+				border: 0.5px solid #DDDDDD;
+			}
+			.measure-parameters > div {
+				box-sizing: border-box;
+				padding: 8px;
+				width: 33.33333%;
+				border: 0.5px solid #DDDDDD;
+			}
+			.measure-parameters > div:last-child {
+				flex-grow: 1;
+			}
+			#logo {
+				position: absolute;
+				left: 0.7%; /* Posição horizontal da imagem em relação à margem esquerda */
+				top: 90%; /* Posição vertical da imagem em relação à margem superior */
+				width: 100px; /* Largura da imagem */
+				height: 100px; /* Altura da imagem */
+				z-index: 2; 
+			}
+
+            body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+
+            .map-container {
+                width: calc(33.33% - 10px); /* Largura de 33.33% com espaço entre as divs */
+                margin-bottom: 20px; /* Espaçamento entre as divs */
+                box-sizing: border-box;
+                border: 1px solid #ccc;
+                height: 300px; /* Altura das divs, ajuste conforme necessário */
+            }
+
+            /* Em telas menores, exiba apenas 2 divs por linha */
+            @media (max-width: 768px) {
+                .map-container {
+                    width: calc(50% - 10px);
+                }
+            }
+
+            /* Em telas pequenas, exiba apenas 1 div por linha */
+            @media (max-width: 480px) {
+                .map-container {
+                    width: 100%;
+                }
+            }
+
+            .map-title {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                padding: 5px;
+                text-align: center;
+                font-weight: bold;
+                font-size: 14px;
+                z-index: 1; 
+            }
+
+		</style>
+		<script 
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACgKxrAX5zAD5nsC5KCvPF07tN1nXgUDE&v=beta&libraries=marker&callback=initMap&v=beta">
+		</script>
+    	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<script type="text/javascript" src="geoxml3.js"></script>
+		<script src="dist/geolib.js"></script>
+		<script src="dist/geolib.isPointInsideRobust.js"></script>
+		<script type="text/javascript" src="auth.js"></script>
+    </head>
+	<body>
+		<img id="logo" src="https://media.licdn.com/dms/image/C4E0BAQE-ZZaURHu6jQ/company-logo_200_200/0/1626287863241?e=1698883200&v=beta&t=IhPJKW9tC7i7nZjZloppNuAJkkF_uLB6tFmxIp7yaQk" alt="Logo da Empresa">
+		<!-- Mapa 1 -->
+        <div id="map1" class="map-container">
+            <script type="text/javascript">
+                const urlAPIUsinaUHIT = 'http://54.94.47.11:3000/usinas/UHIT';
+                const urlAPIEstacoesUHIT = 'http://54.94.47.11:3000/estacoes/UHIT';
+                const urlPoligonoKMLUHIT = 'http://3.140.139.163/map/UHIT.txt';
+                const urlCasasKMLUHIT = 'http://3.140.139.163/map/coordenadas_pop/casas_uhit.txt';
+                
+			    // Função para criar o mapa
+		        async function initMap() {
+                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getData(urlAPIUsinaUHIT), getData(urlAPIEstacoesUHIT)]);
+                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
+                    
+                    document.title = usina.e3_label;
+                    
+                    const map1 = new google.maps.Map(document.getElementById("map1"), { // Chamada da API do Google Maps -> Gera o Mapa
+                        zoom: usina.zoom,
+                        center: { lat: usina.lat, lng: usina.lng },
+                        mapId: "19392f27b147b2cb",
+                    });
+                    
+                    const geoXml = new geoXML3.parser({
+                        map: map1,
+                        singleInfoWindow: true
+                    });
+
+                    // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+                    geoXml.parse(urlPoligonoKMLUHIT);
+
+                    var tourStops = new Array();
+                    for (var marcador of marcadores) {
+                        var infoArray = [`${marcador.timestamp_eqp}`];
+                        var infoSts = [
+                        marcador.alm_acss,
+                        marcador.alm_alim,
+                        marcador.alm_audio,
+                        marcador.alm_cmd,
+                        marcador.alm_com,
+                        marcador.alm_hdw,
+                        marcador.sts_ping
+                        ];
+                        var position = { lat: marcador.lat, lng: marcador.lng } 
+                        var cor;
+                        if (marcador.sts_ping == false) {
+                            cor = COR_VERMELHA;
+                        } else if (marcador.sts_ping == true) {
+                            cor = COR_VERDE;
+                        } else {
+                            cor = COR_CINZA;
+                        }
+
+                        var label = "";
+                        if (marcador.e3_label.charAt(0) == "C") { // Se for COL00
+                            label = marcador.e3_label.replace(/.{2}$/, '');
+                        } else { // Se for ER
+                            label = marcador.e3_label.replace(/^.{2}/, '');
+                        }
+                        
+                        var obj = {
+                            position: position,
+                            title: marcador.descrp,
+                            label: label,
+                            cor: cor
+                        };
+
+                        tourStops.push(obj);
+                    }
+                    
+                    // Crie uma janela de informações para compartilhar entre os marcadores.
+                    const infoWindow = new google.maps.InfoWindow();
+                    window.infoWindow = infoWindow;
+                    
+                    // Cria os marcadores	
+                    tourStops.forEach(function({ position, title, label, cor }){							
+                        const marker = new google.maps.Marker({
+                            position,
+                            map: map1,
+                            title: title,
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                fillColor: cor,
+                                fillOpacity: 1,
+                                scale: 8,
+                                strokeWeight: 1,
+                                rotation: 0,
+                                labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
+                            },
+                            label: {
+                                text: label,
+                                color: 'black', // Cor do texto do label
+                                fontWeight: 'bold' // Estilo do texto do label
+                            }
+                        });
+                    });
+
+                    // Cria marcadores das casas
+                    fetch(urlCasasKMLUHIT)
+                        .then(response => {
+                            // Verifique se a resposta da solicitação HTTP é bem-sucedida (status 200 OK)
+                            if (!response.ok) {
+                            throw new Error(`Erro ao buscar o arquivo KML. Status: ${response.status}`);
+                            }
+                            // Parse a resposta como texto
+                            return response.text();
+                        })
+                        .then(data => {
+                            // Agora, você pode chamar sua função para extrair as coordenadas do KML
+                            const listaDeCoordenadas = extrairCoordenadasDoKML(data);
+                            
+                            // Cria os marcadores das Residências
+                            listaDeCoordenadas.forEach(function({ position, label }){
+                                // Define a URL da imagem do ícone personalizado
+                                const customIconUrl = 'https://i.ibb.co/92SF1H4/casa.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/
+                                const marker = new google.maps.Marker({
+                                position,
+                                map: map1,
+                                icon: {
+                                    url: customIconUrl,
+                                    scaledSize: new google.maps.Size(16, 16), // Tamanho do ícone
+                                    anchor: new google.maps.Point(8, 16), // Ponto de ancoragem (ponto no meio inferior da imagem)
+                                },
+                                });
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Erro ao buscar o arquivo KML:', error);
+                        });
+
+                }
+            </script>
+        </div>
+    
+        <!-- Mapa 2 -->
+        <div id="map2" class="map-container">
+            <script type="text/javascript">
+                const urlAPIUsinaUHMA = 'http://54.94.47.11:3000/usinas/UHMA';
+                const urlAPIEstacoesUHMA = 'http://54.94.47.11:3000/estacoes/UHMA';
+                const urlPoligonoKMLUHMA = 'http://3.140.139.163/map/UHMA.txt';
+                const urlCasasKMLUHMA = 'http://3.140.139.163/map/coordenadas_pop/casas_uhit.txt';
+                
+			    // Função para criar o mapa
+		        async function initUHMA() {
+                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUHMA(urlAPIUsinaUHMA), getDataUHMA(urlAPIEstacoesUHMA)]);
+                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
+                    
+                    document.title = usina.e3_label;
+                    
+                    const map2 = new google.maps.Map(document.getElementById("map2"), { // Chamada da API do Google Maps -> Gera o Mapa
+                        zoom: usina.zoom,
+                        center: { lat: usina.lat, lng: usina.lng },
+                        mapId: "19392f27b147b2cb",
+                    });
+                    
+                    const geoXml = new geoXML3.parser({
+                        map: map2,
+                        singleInfoWindow: true
+                    });
+
+                    // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+                    geoXml.parse(urlPoligonoKMLUHMA);
+
+                    var tourStops = new Array();
+                    for (var marcador of marcadores) {
+                        var infoArray = [`${marcador.timestamp_eqp}`];
+                        var infoSts = [
+                        marcador.alm_acss,
+                        marcador.alm_alim,
+                        marcador.alm_audio,
+                        marcador.alm_cmd,
+                        marcador.alm_com,
+                        marcador.alm_hdw,
+                        marcador.sts_ping
+                        ];
+                        var position = { lat: marcador.lat, lng: marcador.lng } 
+                        var cor;
+                        if (marcador.sts_ping == false) {
+                            cor = COR_VERMELHA;
+                        } else if (marcador.sts_ping == true) {
+                            cor = COR_VERDE;
+                        } else {
+                            cor = COR_CINZA;
+                        }
+
+                        var label = "";
+                        if (marcador.e3_label.charAt(0) == "C") { // Se for COL00
+                            label = marcador.e3_label.replace(/.{2}$/, '');
+                        } else { // Se for ER
+                            label = marcador.e3_label.replace(/^.{2}/, '');
+                        }
+                        
+                        var obj = {
+                            position: position,
+                            title: marcador.descrp,
+                            label: label,
+                            cor: cor
+                        };
+
+                        tourStops.push(obj);
+                    }
+                    
+                    // Crie uma janela de informações para compartilhar entre os marcadores.
+                    const infoWindow = new google.maps.InfoWindow();
+                    window.infoWindow = infoWindow;
+                    
+                    // Cria os marcadores	
+                    tourStops.forEach(function({ position, title, label, cor }){							
+                        const marker = new google.maps.Marker({
+                            position,
+                            map: map2,
+                            title: title,
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                fillColor: cor,
+                                fillOpacity: 1,
+                                scale: 8,
+                                strokeWeight: 1,
+                                rotation: 0,
+                                labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
+                            },
+                            label: {
+                                text: label,
+                                color: 'black', // Cor do texto do label
+                                fontWeight: 'bold' // Estilo do texto do label
+                            }
+                        });
+                    });
+
+                    // Cria marcadores das casas
+                    fetch(urlCasasKMLUHMA)
+                        .then(response => {
+                            // Verifique se a resposta da solicitação HTTP é bem-sucedida (status 200 OK)
+                            if (!response.ok) {
+                            throw new Error(`Erro ao buscar o arquivo KML. Status: ${response.status}`);
+                            }
+                            // Parse a resposta como texto
+                            return response.text();
+                        })
+                        .then(data => {
+                            // Agora, você pode chamar sua função para extrair as coordenadas do KML
+                            const listaDeCoordenadas = extrairCoordenadasDoKML(data);
+                            
+                            // Cria os marcadores das Residências
+                            listaDeCoordenadas.forEach(function({ position, label }){
+                                // Define a URL da imagem do ícone personalizado
+                                const customIconUrl = 'https://i.ibb.co/92SF1H4/casa.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/
+                                const marker = new google.maps.Marker({
+                                position,
+                                map: map2,
+                                icon: {
+                                    url: customIconUrl,
+                                    scaledSize: new google.maps.Size(16, 16), // Tamanho do ícone
+                                    anchor: new google.maps.Point(8, 16), // Ponto de ancoragem (ponto no meio inferior da imagem)
+                                },
+                                });
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Erro ao buscar o arquivo KML:', error);
+                        });
+
+                }
+
+                async function getDataUHMA(URL) {
+                    try {
+                        const timestamp = new Date().getTime(); // Generate a unique timestamp
+                        const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
+                        const response = await axios.get(cacheBusterURL);
+                        if (response.status === 200) {
+                            return response.data;
+                        } else {
+                            console.log('Error getting data:', response.status);
+                            return null;
+                        }
+                    } catch (error) {
+                        console.log('Error getting data catch:', error);
+                        return null;
+                    }
+                }
+                
+                setTimeout(initUHMA, 5000);
+
+            </script>
+        </div>
+    
+        <!-- Mapa 3 -->
+        <div id="map3" class="map-container">
+            <script type="text/javascript">
+                const urlAPIUsinaUHPF = 'http://54.94.47.11:3000/usinas/UHPF';
+                const urlAPIEstacoesUHPF = 'http://54.94.47.11:3000/estacoes/UHPF';
+                const urlPoligonoKMLUHPF = 'http://3.140.139.163/map/UHPF.txt';
+                const urlCasasKMLUHPF = 'http://3.140.139.163/map/coordenadas_pop/casas_uhit.txt';
+                
+			    // Função para criar o mapa
+		        async function initUHPF() {
+                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUHPF(urlAPIUsinaUHPF), getDataUHPF(urlAPIEstacoesUHPF)]);
+                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
+                    
+                    document.title = usina.e3_label;
+                    
+                    const map3 = new google.maps.Map(document.getElementById("map3"), { // Chamada da API do Google Maps -> Gera o Mapa
+                        zoom: usina.zoom,
+                        center: { lat: usina.lat, lng: usina.lng },
+                        mapId: "19392f27b147b2cb",
+                    });
+                    
+                    const geoXml = new geoXML3.parser({
+                        map: map3,
+                        singleInfoWindow: true
+                    });
+
+                    // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+                    geoXml.parse(urlPoligonoKMLUHPF);
+
+                    var tourStops = new Array();
+                    for (var marcador of marcadores) {
+                        var infoArray = [`${marcador.timestamp_eqp}`];
+                        var infoSts = [
+                        marcador.alm_acss,
+                        marcador.alm_alim,
+                        marcador.alm_audio,
+                        marcador.alm_cmd,
+                        marcador.alm_com,
+                        marcador.alm_hdw,
+                        marcador.sts_ping
+                        ];
+                        var position = { lat: marcador.lat, lng: marcador.lng } 
+                        var cor;
+                        if (marcador.sts_ping == false) {
+                            cor = COR_VERMELHA;
+                        } else if (marcador.sts_ping == true) {
+                            cor = COR_VERDE;
+                        } else {
+                            cor = COR_CINZA;
+                        }
+
+                        var label = "";
+                        if (marcador.e3_label.charAt(0) == "C") { // Se for COL00
+                            label = marcador.e3_label.replace(/.{2}$/, '');
+                        } else { // Se for ER
+                            label = marcador.e3_label.replace(/^.{2}/, '');
+                        }
+                        
+                        var obj = {
+                            position: position,
+                            title: marcador.descrp,
+                            label: label,
+                            cor: cor
+                        };
+
+                        tourStops.push(obj);
+                    }
+                    
+                    // Crie uma janela de informações para compartilhar entre os marcadores.
+                    const infoWindow = new google.maps.InfoWindow();
+                    window.infoWindow = infoWindow;
+                    
+                    // Cria os marcadores	
+                    tourStops.forEach(function({ position, title, label, cor }){							
+                        const marker = new google.maps.Marker({
+                            position,
+                            map: map3,
+                            title: title,
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                fillColor: cor,
+                                fillOpacity: 1,
+                                scale: 8,
+                                strokeWeight: 1,
+                                rotation: 0,
+                                labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
+                            },
+                            label: {
+                                text: label,
+                                color: 'black', // Cor do texto do label
+                                fontWeight: 'bold' // Estilo do texto do label
+                            }
+                        });
+                    });
+
+                    // Cria marcadores das casas
+                    fetch(urlCasasKMLUHPF)
+                        .then(response => {
+                            // Verifique se a resposta da solicitação HTTP é bem-sucedida (status 200 OK)
+                            if (!response.ok) {
+                            throw new Error(`Erro ao buscar o arquivo KML. Status: ${response.status}`);
+                            }
+                            // Parse a resposta como texto
+                            return response.text();
+                        })
+                        .then(data => {
+                            // Agora, você pode chamar sua função para extrair as coordenadas do KML
+                            const listaDeCoordenadas = extrairCoordenadasDoKML(data);
+                            
+                            // Cria os marcadores das Residências
+                            listaDeCoordenadas.forEach(function({ position, label }){
+                                // Define a URL da imagem do ícone personalizado
+                                const customIconUrl = 'https://i.ibb.co/92SF1H4/casa.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/
+                                const marker = new google.maps.Marker({
+                                position,
+                                map: map3,
+                                icon: {
+                                    url: customIconUrl,
+                                    scaledSize: new google.maps.Size(16, 16), // Tamanho do ícone
+                                    anchor: new google.maps.Point(8, 16), // Ponto de ancoragem (ponto no meio inferior da imagem)
+                                },
+                                });
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Erro ao buscar o arquivo KML:', error);
+                        });
+
+                }
+
+                async function getDataUHPF(URL) {
+                    try {
+                        const timestamp = new Date().getTime(); // Generate a unique timestamp
+                        const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
+                        const response = await axios.get(cacheBusterURL);
+                        if (response.status === 200) {
+                            return response.data;
+                        } else {
+                            console.log('Error getting data:', response.status);
+                            return null;
+                        }
+                    } catch (error) {
+                        console.log('Error getting data catch:', error);
+                        return null;
+                    }
+                }
+                
+                setTimeout(initUHPF, 10000);
+
+            </script>
+        </div>
+    
+        <!-- Mapa 4 -->
+        <div id="map4" class="map-container">
+            <script type="text/javascript">
+                const urlAPIUsinaUHIP = 'http://54.94.47.11:3000/usinas/UHIP';
+                const urlAPIEstacoesUHIP = 'http://54.94.47.11:3000/estacoes/UHIP';
+                const urlPoligonoKMLUHIP = 'http://3.140.139.163/map/UHIP.txt';
+                const urlCasasKMLUHIP = 'http://3.140.139.163/map/coordenadas_pop/casas_uhit.txt';
+                
+			    // Função para criar o mapa
+		        async function initUHIP() {
+                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUHIP(urlAPIUsinaUHIP), getDataUHIP(urlAPIEstacoesUHIP)]);
+                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
+                    
+                    document.title = usina.e3_label;
+                    
+                    const map4 = new google.maps.Map(document.getElementById("map4"), { // Chamada da API do Google Maps -> Gera o Mapa
+                        zoom: usina.zoom,
+                        center: { lat: usina.lat, lng: usina.lng },
+                        mapId: "19392f27b147b2cb",
+                    });
+                    
+                    const geoXml = new geoXML3.parser({
+                        map: map4,
+                        singleInfoWindow: true
+                    });
+
+                    // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+                    geoXml.parse(urlPoligonoKMLUHIP);
+
+                    var tourStops = new Array();
+                    for (var marcador of marcadores) {
+                        var infoArray = [`${marcador.timestamp_eqp}`];
+                        var infoSts = [
+                        marcador.alm_acss,
+                        marcador.alm_alim,
+                        marcador.alm_audio,
+                        marcador.alm_cmd,
+                        marcador.alm_com,
+                        marcador.alm_hdw,
+                        marcador.sts_ping
+                        ];
+                        var position = { lat: marcador.lat, lng: marcador.lng } 
+                        var cor;
+                        if (marcador.sts_ping == false) {
+                            cor = COR_VERMELHA;
+                        } else if (marcador.sts_ping == true) {
+                            cor = COR_VERDE;
+                        } else {
+                            cor = COR_CINZA;
+                        }
+
+                        var label = "";
+                        if (marcador.e3_label.charAt(0) == "C") { // Se for COL00
+                            label = marcador.e3_label.replace(/.{2}$/, '');
+                        } else { // Se for ER
+                            label = marcador.e3_label.replace(/^.{2}/, '');
+                        }
+                        
+                        var obj = {
+                            position: position,
+                            title: marcador.descrp,
+                            label: label,
+                            cor: cor
+                        };
+
+                        tourStops.push(obj);
+                    }
+                    
+                    // Crie uma janela de informações para compartilhar entre os marcadores.
+                    const infoWindow = new google.maps.InfoWindow();
+                    window.infoWindow = infoWindow;
+                    
+                    // Cria os marcadores	
+                    tourStops.forEach(function({ position, title, label, cor }){							
+                        const marker = new google.maps.Marker({
+                            position,
+                            map: map4,
+                            title: title,
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                fillColor: cor,
+                                fillOpacity: 1,
+                                scale: 8,
+                                strokeWeight: 1,
+                                rotation: 0,
+                                labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
+                            },
+                            label: {
+                                text: label,
+                                color: 'black', // Cor do texto do label
+                                fontWeight: 'bold' // Estilo do texto do label
+                            }
+                        });
+                    });
+
+                    // Cria marcadores das casas
+                    fetch(urlCasasKMLUHIP)
+                        .then(response => {
+                            // Verifique se a resposta da solicitação HTTP é bem-sucedida (status 200 OK)
+                            if (!response.ok) {
+                            throw new Error(`Erro ao buscar o arquivo KML. Status: ${response.status}`);
+                            }
+                            // Parse a resposta como texto
+                            return response.text();
+                        })
+                        .then(data => {
+                            // Agora, você pode chamar sua função para extrair as coordenadas do KML
+                            const listaDeCoordenadas = extrairCoordenadasDoKML(data);
+                            
+                            // Cria os marcadores das Residências
+                            listaDeCoordenadas.forEach(function({ position, label }){
+                                // Define a URL da imagem do ícone personalizado
+                                const customIconUrl = 'https://i.ibb.co/92SF1H4/casa.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/
+                                const marker = new google.maps.Marker({
+                                position,
+                                map: map4,
+                                icon: {
+                                    url: customIconUrl,
+                                    scaledSize: new google.maps.Size(16, 16), // Tamanho do ícone
+                                    anchor: new google.maps.Point(8, 16), // Ponto de ancoragem (ponto no meio inferior da imagem)
+                                },
+                                });
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Erro ao buscar o arquivo KML:', error);
+                        });
+
+                }
+
+                async function getDataUHIP(URL) {
+                    try {
+                        const timestamp = new Date().getTime(); // Generate a unique timestamp
+                        const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
+                        const response = await axios.get(cacheBusterURL);
+                        if (response.status === 200) {
+                            return response.data;
+                        } else {
+                            console.log('Error getting data:', response.status);
+                            return null;
+                        }
+                    } catch (error) {
+                        console.log('Error getting data catch:', error);
+                        return null;
+                    }
+                }
+                
+                setTimeout(initUHIP, 15000);
+
+            </script>
+        </div>
+    
+        <!-- Mapa 5 -->
+        <div id="map5" class="map-container">
+            <script type="text/javascript">
+                const urlAPIUsinaUHAI = 'http://54.94.47.11:3000/usinas/UHAI';
+                const urlAPIEstacoesUHAI = 'http://54.94.47.11:3000/estacoes/UHAI';
+                
+			    // Função para criar o mapa
+		        async function initUHAI() {
+                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUHAI(urlAPIUsinaUHAI), getDataUHAI(urlAPIEstacoesUHAI)]);
+                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
+                    
+                    document.title = usina.e3_label;
+                    
+                    const map5 = new google.maps.Map(document.getElementById("map5"), { // Chamada da API do Google Maps -> Gera o Mapa
+                        zoom: usina.zoom,
+                        center: { lat: usina.lat, lng: usina.lng },
+                        mapId: "19392f27b147b2cb",
+                    });
+                    
+                    const geoXml = new geoXML3.parser({
+                        map: map5,
+                        singleInfoWindow: true
+                    });
+
+                    var tourStops = new Array();
+                    for (var marcador of marcadores) {
+                        var infoArray = [`${marcador.timestamp_eqp}`];
+                        var infoSts = [
+                        marcador.alm_acss,
+                        marcador.alm_alim,
+                        marcador.alm_audio,
+                        marcador.alm_cmd,
+                        marcador.alm_com,
+                        marcador.alm_hdw,
+                        marcador.sts_ping
+                        ];
+                        var position = { lat: marcador.lat, lng: marcador.lng } 
+                        var cor;
+                        if (marcador.sts_ping == false) {
+                            cor = COR_VERMELHA;
+                        } else if (marcador.sts_ping == true) {
+                            cor = COR_VERDE;
+                        } else {
+                            cor = COR_CINZA;
+                        }
+
+                        var label = "";
+                        if (marcador.e3_label.charAt(0) == "C") { // Se for COL00
+                            label = marcador.e3_label.replace(/.{2}$/, '');
+                        } else { // Se for ER
+                            label = marcador.e3_label.replace(/^.{2}/, '');
+                        }
+                        
+                        var obj = {
+                            position: position,
+                            title: marcador.descrp,
+                            label: label,
+                            cor: cor
+                        };
+
+                        tourStops.push(obj);
+                    }
+                    
+                    // Crie uma janela de informações para compartilhar entre os marcadores.
+                    const infoWindow = new google.maps.InfoWindow();
+                    window.infoWindow = infoWindow;
+                    
+                    // Cria os marcadores	
+                    tourStops.forEach(function({ position, title, label, cor }){							
+                        const marker = new google.maps.Marker({
+                            position,
+                            map: map5,
+                            title: title,
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                fillColor: cor,
+                                fillOpacity: 1,
+                                scale: 8,
+                                strokeWeight: 1,
+                                rotation: 0,
+                                labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
+                            },
+                            label: {
+                                text: label,
+                                color: 'black', // Cor do texto do label
+                                fontWeight: 'bold' // Estilo do texto do label
+                            }
+                        });
+                    });
+
+                }
+
+                async function getDataUHAI(URL) {
+                    try {
+                        const timestamp = new Date().getTime(); // Generate a unique timestamp
+                        const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
+                        const response = await axios.get(cacheBusterURL);
+                        if (response.status === 200) {
+                            return response.data;
+                        } else {
+                            console.log('Error getting data:', response.status);
+                            return null;
+                        }
+                    } catch (error) {
+                        console.log('Error getting data catch:', error);
+                        return null;
+                    }
+                }
+                
+                setTimeout(initUHAI, 20000);
+
+            </script>
+        </div>
+    
+        <!-- Mapa 6 -->
+        <div id="map6" class="map-container">
+            <!-- Inclua aqui o código para o seu sexto mapa -->
+            <h1>Teste 5</h1>
+        </div>
+    
+        <!-- Mapa 7 -->
+        <div id="map7" class="map-container">
+            <script type="text/javascript">
+                const urlAPIUsinaUTPS = 'http://54.94.47.11:3000/usinas/UTPS';
+                const urlAPIEstacoesUTPS = 'http://54.94.47.11:3000/estacoes/UTPS';
+                const urlPoligonoKMLUTPS = 'http://3.140.139.163/map/UTPS.txt';
+                const urlCasasKMLUTPS = 'http://3.140.139.163/map/coordenadas_pop/casas_uhit.txt';
+                
+			    // Função para criar o mapa
+		        async function initUTPS() {
+                    var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getDataUTPS(urlAPIUsinaUTPS), getDataUTPS(urlAPIEstacoesUTPS)]);
+                    var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
+                    
+                    document.title = usina.e3_label;
+                    
+                    const map7 = new google.maps.Map(document.getElementById("map7"), { // Chamada da API do Google Maps -> Gera o Mapa
+                        zoom: usina.zoom,
+                        center: { lat: usina.lat, lng: usina.lng },
+                        mapId: "19392f27b147b2cb",
+                    });
+                    
+                    const geoXml = new geoXML3.parser({
+                        map: map7,
+                        singleInfoWindow: true
+                    });
+
+                    // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+                    geoXml.parse(urlPoligonoKMLUTPS);
+
+                    var tourStops = new Array();
+                    for (var marcador of marcadores) {
+                        var infoArray = [`${marcador.timestamp_eqp}`];
+                        var infoSts = [
+                        marcador.alm_acss,
+                        marcador.alm_alim,
+                        marcador.alm_audio,
+                        marcador.alm_cmd,
+                        marcador.alm_com,
+                        marcador.alm_hdw,
+                        marcador.sts_ping
+                        ];
+                        var position = { lat: marcador.lat, lng: marcador.lng } 
+                        var cor;
+                        if (marcador.sts_ping == false) {
+                            cor = COR_VERMELHA;
+                        } else if (marcador.sts_ping == true) {
+                            cor = COR_VERDE;
+                        } else {
+                            cor = COR_CINZA;
+                        }
+
+                        var label = "";
+                        if (marcador.e3_label.charAt(0) == "C") { // Se for COL00
+                            label = marcador.e3_label.replace(/.{2}$/, '');
+                        } else { // Se for ER
+                            label = marcador.e3_label.replace(/^.{2}/, '');
+                        }
+                        
+                        var obj = {
+                            position: position,
+                            title: marcador.descrp,
+                            label: label,
+                            cor: cor
+                        };
+
+                        tourStops.push(obj);
+                    }
+                    
+                    // Crie uma janela de informações para compartilhar entre os marcadores.
+                    const infoWindow = new google.maps.InfoWindow();
+                    window.infoWindow = infoWindow;
+                    
+                    // Cria os marcadores	
+                    tourStops.forEach(function({ position, title, label, cor }){							
+                        const marker = new google.maps.Marker({
+                            position,
+                            map: map7,
+                            title: title,
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                fillColor: cor,
+                                fillOpacity: 1,
+                                scale: 8,
+                                strokeWeight: 1,
+                                rotation: 0,
+                                labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
+                            },
+                            label: {
+                                text: label,
+                                color: 'black', // Cor do texto do label
+                                fontWeight: 'bold' // Estilo do texto do label
+                            }
+                        });
+                    });
+
+                }
+
+                async function getDataUTPS(URL) {
+                    try {
+                        const timestamp = new Date().getTime(); // Generate a unique timestamp
+                        const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
+                        const response = await axios.get(cacheBusterURL);
+                        if (response.status === 200) {
+                            return response.data;
+                        } else {
+                            console.log('Error getting data:', response.status);
+                            return null;
+                        }
+                    } catch (error) {
+                        console.log('Error getting data catch:', error);
+                        return null;
+                    }
+                }
+                
+                setTimeout(initUTPS, 20000);
+
+            </script>
+        </div>
+    
+        <!-- Mapa 8 -->
+        <div id="map8" class="map-container">
+            <!-- Inclua aqui o código para o seu oitavo mapa -->
+            <h1>Teste</h1>
+        </div>
+		<script type="text/javascript">
+            // Verifica a autenticação antes de executar qualquer código específico da página
+            const userAuth = auth.isAuthenticated();
+            console.log("Auth mapa: ", userAuth);
+            if (!userAuth) {
+                // Redirecione para a página de login
+                window.location.href = "http://3.140.139.163/map/login.html";
+            }
+
+            // Constantes globais
+            const COR_VERDE = '#00FF00', COR_VERMELHA = '#FF0000', COR_CINZA = '#818181';
+
+            async function getData(URL) {
+                try {
+                    const timestamp = new Date().getTime(); // Generate a unique timestamp
+                    const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
+                    const response = await axios.get(cacheBusterURL);
+                    if (response.status === 200) {
+                        return response.data;
+                    } else {
+                        console.log('Error getting data:', response.status);
+                        return null;
+                    }
+                } catch (error) {
+                    console.log('Error getting data catch:', error);
+                    return null;
+                }
+            }
+            
+			function extrairCoordenadasDoKML(textoKML) {
+				const parser = new DOMParser();
+				const docKML = parser.parseFromString(textoKML, 'text/xml');
+
+				// Encontrar todos os elementos Placemark no KML
+				const placemarks = docKML.querySelectorAll('Placemark');
+				
+				const listaDeCoordenadas = [];
+				let i = 1;
+				placemarks.forEach((placemark) => {
+					// Extrair as coordenadas de cada Placemark
+					const coordenadas = placemark.querySelector('coordinates').textContent;
+					
+					// Dividir as coordenadas em um array de pares [longitude, latitude]
+					const paresDeCoordenadas = coordenadas.split(' ');
+
+					const arrayDeCoordenadas = paresDeCoordenadas.map((par) => {
+						const [lng, lat] = par.split(',');
+						return [parseFloat(lng), parseFloat(lat)]
+					});
+					const coord = arrayDeCoordenadas[0];
+					listaDeCoordenadas.push({
+						label: i,
+						position: {lat: coord[1], lng: coord[0]},
+					});
+					i = i+1;
+				});
+
+				return listaDeCoordenadas;
+			}
+
+            window.addEventListener('beforeunload', function () {
+                // Define a variável isAuthenticated como false ao fechar a página
+                auth.setAuthenticated(false);
+            });
+
+        </script>        
+    </body>
+</html>
