@@ -48,6 +48,7 @@
                 background-size: cover; /* Isso fará com que a imagem cubra todo o espaço da div */
                 background-repeat: no-repeat;
                 background-position: center center;
+                cursor: pointer;
             }
 
             .titulo {
@@ -122,11 +123,46 @@
                 // Redirecione para a página de login
                 window.location.href = "http://3.140.139.163/map/login.html";
             }
-                    
-            document.title = "Portifólio TLV";
     
             window.addEventListener('beforeunload', function () {
                 auth.setAuthenticated(false);
+            });
+                    
+            document.title = "Portifólio TLV";
+
+            document.getElementById("map1").addEventListener("click", function() {
+                window.location.href = "http://3.140.139.163/map/UHIT_api.html";
+                auth.setAuthenticated(true);
+            });
+
+            document.getElementById("map2").addEventListener("click", function() {
+                window.location.href = "http://3.140.139.163/map/UHMA_api.html";
+                auth.setAuthenticated(true);
+            });
+
+            document.getElementById("map3").addEventListener("click", function() {
+                window.location.href = "http://3.140.139.163/map/UHPF_api.html";
+                auth.setAuthenticated(true);
+            });
+
+            document.getElementById("map4").addEventListener("click", function() {
+                window.location.href = "http://3.140.139.163/map/UHIP_api.html";
+                auth.setAuthenticated(true);
+            });
+
+            document.getElementById("map5").addEventListener("click", function() {
+                window.location.href = "http://3.140.139.163/map/UHAI_api.html";
+                auth.setAuthenticated(true);
+            });
+
+            document.getElementById("map6").addEventListener("click", function() {
+                window.location.href = "http://3.140.139.163/map/UHIP_cad_pop.html";
+                auth.setAuthenticated(true);
+            });
+
+            document.getElementById("map7").addEventListener("click", function() {
+                window.location.href = "http://3.140.139.163/map/UTPS_api.html";
+                auth.setAuthenticated(true);
             });
 
         </script>        
