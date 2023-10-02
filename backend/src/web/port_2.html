@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Portifólio</title>
+		<meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style>
+			#logo {
+				position: absolute;
+				left: 0.7%; /* Posição horizontal da imagem em relação à margem esquerda */
+				top: 90%; /* Posição vertical da imagem em relação à margem superior */
+				width: 100px; /* Largura da imagem */
+				height: 100px; /* Altura da imagem */
+				z-index: 2; 
+			}
+
+            body {
+                margin: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                /* background-image: url('http://3.140.139.163/map/images/fundo.png'); */
+                background-size: cover; /* Ajusta o tamanho da imagem para cobrir toda a tela */
+                background-repeat: no-repeat;
+                background-attachment: fixed; /* Fixa a imagem de fundo para evitar rolagem */
+            }
+
+            /* Em telas menores, exiba apenas 2 divs por linha */
+            @media (max-width: 768px) {
+                .map-container {
+                    width: calc(50% - 10px);
+                }
+            }
+
+            /* Em telas pequenas, exiba apenas 1 div por linha */
+            @media (max-width: 480px) {
+                .map-container {
+                    width: 100%;
+                }
+            }
+            
+            .cont-imagem {
+                width: calc(33% - 10px); /* Largura de 33% com espaço entre as divs */
+                height: 290px; /* Altura das divs, ajuste conforme necessário */
+                margin-bottom: 20px; /* Espaçamento entre as divs */
+                box-sizing: border-box;
+                border: 1px solid #ccc;
+                background-size: cover; /* Isso fará com que a imagem cubra todo o espaço da div */
+                background-repeat: no-repeat;
+                background-position: center center;
+            }
+
+            .titulo {
+                padding-left: 10px;
+                color: black;
+                text-shadow: white 0.1em 0.1em 0.2em;
+            }
+
+		</style>
+		<script 
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACgKxrAX5zAD5nsC5KCvPF07tN1nXgUDE&v=beta&libraries=marker&callback=initMap&v=beta">
+		</script>
+    	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<script type="text/javascript" src="geoxml3.js"></script>
+		<script src="dist/geolib.js"></script>
+		<script src="dist/geolib.isPointInsideRobust.js"></script>
+		<script type="text/javascript" src="auth.js"></script>
+    </head>
+	<body>
+		<img id="logo" src="https://media.licdn.com/dms/image/C4E0BAQE-ZZaURHu6jQ/company-logo_200_200/0/1626287863241?e=1698883200&v=beta&t=IhPJKW9tC7i7nZjZloppNuAJkkF_uLB6tFmxIp7yaQk" alt="Logo da Empresa">
+		
+        <!-- Mapa 1 -->
+        <div id="map1" class="cont-imagem" style="background-image: url('http://3.140.139.163/map/images/UHIT.png'); margin-left: 10px; margin-top: 10px;">
+            <h2 class="titulo">UHIT</h2>
+        </div>
+    
+        <!-- Mapa 2 -->
+        <div id="map2" class="cont-imagem" style="background-image: url('http://3.140.139.163/map/images/UHMA.png'); margin-top: 10px;">
+            <h2 class="titulo">UHMA</h2>
+        </div>
+    
+        <!-- Mapa 3 -->
+        <div id="map3" class="cont-imagem" style="background-image: url('http://3.140.139.163/map/images/UHPF.png'); margin-top: 10px; margin-right: 10px;">
+            <h2 class="titulo">UHPF</h2>
+        </div>
+    
+        <!-- Mapa 4 -->
+        <div id="map4" class="cont-imagem" style="background-image: url('http://3.140.139.163/map/images/UHIP.png'); margin-left: 10px;">
+            <h2 class="titulo">UHIP</h2>
+        </div>
+    
+        <!-- Mapa 5 -->
+        <div id="map5" class="cont-imagem" style="background-image: url('http://3.140.139.163/map/images/UHAI.png');">
+            <h2 class="titulo">UHAI</h2>
+        </div>
+    
+        <!-- Mapa 6 -->
+        <div id="map6" class="cont-imagem" style="background-image: url('http://3.140.139.163/map/images/UHIP_POP.png'); margin-right: 10px;">
+            <h2 class="titulo">UHIP POP</h2>
+        </div>
+    
+        <!-- Mapa 7 -->
+        <div id="map7" class="cont-imagem" style="background-image: url('http://3.140.139.163/map/images/UTPS.png'); margin-left: 10px;">
+            <h2 class="titulo">UTPS</h2>
+        </div>
+    
+        <!-- Mapa 8 -->
+        <div id="map8" class="cont-imagem" style="margin-right: 10px;">
+            <h2 class="titulo">UH TESTE 1</h2>
+        </div>
+    
+        <!-- Mapa 9 -->
+        <div id="map9" class="cont-imagem" style="margin-right: 10px;">
+            <h2 class="titulo">UH TESTE 2</h2>
+        </div>
+        
+		<script type="text/javascript">
+            // Verifica a autenticação antes de executar qualquer código específico da página
+            // const userAuth = auth.isAuthenticated();
+            // console.log("Auth mapa: ", userAuth);
+            // if (!userAuth) {
+            //     // Redirecione para a página de login
+            //     window.location.href = "http://3.140.139.163/map/login.html";
+            // }
+                    
+            document.title = "Portifólio TLV";
+            
+            // const urlAPIUsinaUHIT = 'http://54.94.47.11:3000/usinas/UHIT';
+            // const urlAPIEstacoesUHIT = 'http://54.94.47.11:3000/estacoes/UHIT';
+            // const urlPoligonoKMLUHIT = 'http://3.140.139.163/map/UHIT.txt';
+            // const urlCasasKMLUHIT = 'http://3.140.139.163/map/coordenadas_pop/casas_uhit.txt';
+
+            // // Constantes globais
+            // const COR_VERDE = '#00FF00', COR_VERMELHA = '#FF0000', COR_CINZA = '#818181';
+            
+            // function criaMapa(elementId, usinaZoom, usinaLat, usinaLng, id) {
+            //     return new google.maps.Map(document.getElementById(elementId), { // Chamada da API do Google Maps -> Gera o Mapa
+            //         zoom: usinaZoom,
+            //         center: { lat: usinaLat, lng: usinaLng },
+            //         mapId: id,
+            //     })
+            // }
+
+            // function criaTourStops(marcadores) {
+            //     var tourStops = new Array();
+            //     for (var marcador of marcadores) {
+            //         var infoArray = [`${marcador.timestamp_eqp}`];
+            //         var infoSts = [
+            //         marcador.alm_acss,
+            //         marcador.alm_alim,
+            //         marcador.alm_audio,
+            //         marcador.alm_cmd,
+            //         marcador.alm_com,
+            //         marcador.alm_hdw,
+            //         marcador.sts_ping
+            //         ];
+            //         var position = { lat: marcador.lat, lng: marcador.lng } 
+            //         var cor;
+            //         if (marcador.sts_ping == false) {
+            //             cor = COR_VERMELHA;
+            //         } else if (marcador.sts_ping == true) {
+            //             cor = COR_VERDE;
+            //         } else {
+            //             cor = COR_CINZA;
+            //         }
+
+            //         var label = "";
+            //         if (marcador.e3_label.charAt(0) == "C") { // Se for COL00
+            //             label = marcador.e3_label.replace(/.{2}$/, '');
+            //         } else { // Se for ER
+            //             label = marcador.e3_label.replace(/^.{2}/, '');
+            //         }
+                    
+            //         var obj = {
+            //             position: position,
+            //             title: marcador.descrp,
+            //             label: label,
+            //             cor: cor
+            //         };
+
+            //         tourStops.push(obj);
+            //     }
+            //     return tourStops
+            // }
+
+            // function criaMarcadores(mapa, position, title, label, cor) {		
+            //     return new google.maps.Marker({
+            //             position,
+            //             map: mapa,
+            //             title: title,
+            //             icon: {
+            //                 path: google.maps.SymbolPath.CIRCLE,
+            //                 fillColor: cor,
+            //                 fillOpacity: 1,
+            //                 scale: 8,
+            //                 strokeWeight: 1,
+            //                 rotation: 0,
+            //                 labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
+            //             },
+            //             label: {
+            //                 text: label,
+            //                 color: 'black', // Cor do texto do label
+            //                 fontWeight: 'bold' // Estilo do texto do label
+            //             }
+            //         });
+            // }
+            
+            // function criaCasas(casasUrl, mapa) {
+            //     fetch(casasUrl)
+            //     .then(response => {
+            //         // Verifique se a resposta da solicitação HTTP é bem-sucedida (status 200 OK)
+            //         if (!response.ok) {
+            //         throw new Error(`Erro ao buscar o arquivo KML. Status: ${response.status}`);
+            //         }
+            //         // Parse a resposta como texto
+            //         return response.text();
+            //     })
+            //     .then(data => {
+            //         // Agora, você pode chamar sua função para extrair as coordenadas do KML
+            //         const listaDeCoordenadas = extrairCoordenadasDoKML(data);
+                    
+            //         // Cria os marcadores das Residências
+            //         listaDeCoordenadas.forEach(function({ position, label }){
+            //             // Define a URL da imagem do ícone personalizado
+            //             const customIconUrl = 'https://i.ibb.co/92SF1H4/casa.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/
+            //             const marker = new google.maps.Marker({
+            //             position,
+            //             map: mapa,
+            //             icon: {
+            //                 url: customIconUrl,
+            //                 scaledSize: new google.maps.Size(16, 16), // Tamanho do ícone
+            //                 anchor: new google.maps.Point(8, 16), // Ponto de ancoragem (ponto no meio inferior da imagem)
+            //             },
+            //             });
+            //         });
+            //     })
+            //     .catch(error => {
+            //         console.error('Erro ao buscar o arquivo KML:', error);
+            //     });
+            // }
+
+            // async function getData(URL) {
+            //     try {
+            //         const timestamp = new Date().getTime(); // Generate a unique timestamp
+            //         const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
+            //         const response = await axios.get(cacheBusterURL);
+            //         if (response.status === 200) {
+            //             return response.data;
+            //         } else {
+            //             console.log('Error getting data:', response.status);
+            //             return null;
+            //         }
+            //     } catch (error) {
+            //         console.log('Error getting data catch:', error);
+            //         return null;
+            //     }
+            // }
+
+            // // Função para criar o mapa (UHIT)
+            // async function initMap() {
+            //     var  [dadosUsinaApiUHIT, dadosEstacoesAPIUHIT] = await Promise.all([getData(urlAPIUsinaUHIT), getData(urlAPIEstacoesUHIT)]);
+            //     var usina = dadosUsinaApiUHIT.usina, marcadores =  dadosEstacoesAPIUHIT.estacoes;
+                
+            //     const map1 = criaMapa("map1", usina.zoom, usina.lat, usina.lng, "651ad62cecf2038e83a5c560");
+                
+            //     const geoXml = new geoXML3.parser({ map: map1, singleInfoWindow: true });
+
+            //     // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+            //     geoXml.parse(urlPoligonoKMLUHIT);
+
+            //     var tourStops = new Array();
+            //     tourStops = criaTourStops(marcadores);
+
+            //     // Crie uma janela de informações para compartilhar entre os marcadores.
+            //     const infoWindow = new google.maps.InfoWindow();
+            //     window.infoWindow = infoWindow;
+                
+            //     // Cria os marcadores	
+            //     tourStops.forEach(function({ position, title, label, cor }){
+            //         criaMarcadores(map1, position, title, label, cor);
+            //     });
+
+            //     // Cria marcadores das casas
+            //     // criaCasas(urlCasasKMLUHIT);
+
+            // }
+            
+            // const urlAPIUsinaUHMA = 'http://54.94.47.11:3000/usinas/UHMA';
+            // const urlAPIEstacoesUHMA = 'http://54.94.47.11:3000/estacoes/UHMA';
+            // const urlPoligonoKMLUHMA = 'http://3.140.139.163/map/UHMA.txt';
+            // const urlCasasKMLUHMA = 'http://3.140.139.163/map/coordenadas_pop/casas_uhma.txt';
+            
+            // async function initUHMA() {
+            //     var  [dadosUsinaApiUHMA, dadosEstacoesAPIUHMA] = await Promise.all([getData(urlAPIUsinaUHMA), getData(urlAPIEstacoesUHMA)]);
+            //     var usina = dadosUsinaApiUHMA.usina, marcadores =  dadosEstacoesAPIUHMA.estacoes;
+                
+            //     const map2 = criaMapa("map2", usina.zoom, usina.lat, usina.lng, "651adad1983230af7b6c31e4");
+                
+            //     const geoXml = new geoXML3.parser({ map: map2, singleInfoWindow: true });
+
+            //     // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+            //     geoXml.parse(urlPoligonoKMLUHMA);
+
+            //     var tourStops = new Array();
+            //     tourStops = criaTourStops(marcadores);
+
+            //     // Crie uma janela de informações para compartilhar entre os marcadores.
+            //     const infoWindow = new google.maps.InfoWindow();
+            //     window.infoWindow = infoWindow;
+                
+            //     // Cria os marcadores	
+            //     tourStops.forEach(function({ position, title, label, cor }){
+            //         criaMarcadores(map2, position, title, label, cor);
+            //     });
+
+            //     // Cria marcadores das casas
+            //     // criaCasas(urlCasasKMLUHMA);
+
+            // }
+            // setTimeout(initUHMA, 3000);
+            
+            // const urlAPIUsinaUHPF = 'http://54.94.47.11:3000/usinas/UHPF';
+            // const urlAPIEstacoesUHPF = 'http://54.94.47.11:3000/estacoes/UHPF';
+            // const urlPoligonoKMLUHPF = 'http://3.140.139.163/map/UHPF.txt';
+            // const urlCasasKMLUHPF = 'http://3.140.139.163/map/coordenadas_pop/casas_uhpf.txt';
+            
+            // async function initUHPF() {
+            //     var  [dadosUsinaApiUHPF, dadosEstacoesAPIUHPF] = await Promise.all([getData(urlAPIUsinaUHPF), getData(urlAPIEstacoesUHPF)]);
+            //     var usina = dadosUsinaApiUHPF.usina, marcadores =  dadosEstacoesAPIUHPF.estacoes;
+                
+            //     const map3 = criaMapa("map3", usina.zoom, usina.lat, usina.lng, "651adb29ad7bdd264019feac");
+                
+            //     const geoXml = new geoXML3.parser({ map: map3, singleInfoWindow: true });
+
+            //     // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+            //     geoXml.parse(urlPoligonoKMLUHPF);
+
+            //     var tourStops = new Array();
+            //     tourStops = criaTourStops(marcadores);
+
+            //     // Crie uma janela de informações para compartilhar entre os marcadores.
+            //     const infoWindow = new google.maps.InfoWindow();
+            //     window.infoWindow = infoWindow;
+                
+            //     // Cria os marcadores
+            //     tourStops.forEach(function({ position, title, label, cor }){
+            //         criaMarcadores(map3, position, title, label, cor);
+            //     });
+
+            //     // Cria marcadores das casas
+            //     // criaCasas(urlCasasKMLUHPF);
+
+            // }
+            // setTimeout(initUHPF, 6000);
+            
+            // const urlAPIUsinaUHIP = 'http://54.94.47.11:3000/usinas/UHIP';
+            // const urlAPIEstacoesUHIP = 'http://54.94.47.11:3000/estacoes/UHIP';
+            // const urlPoligonoKMLUHIP = 'http://3.140.139.163/map/UHIP.txt';
+            
+            // async function initUHIP() {
+            //     var  [dadosUsinaApiUHIP, dadosEstacoesAPIUHIP] = await Promise.all([getData(urlAPIUsinaUHIP), getData(urlAPIEstacoesUHIP)]);
+            //     var usina = dadosUsinaApiUHIP.usina, marcadores =  dadosEstacoesAPIUHIP.estacoes;
+                
+            //     const map4 = criaMapa("map4", usina.zoom, usina.lat, usina.lng, "651adb8edb4599ed3327c560");
+                
+            //     const geoXml = new geoXML3.parser({ map: map4, singleInfoWindow: true });
+
+            //     // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+            //     geoXml.parse(urlPoligonoKMLUHIP);
+
+            //     var tourStops = new Array();
+            //     tourStops = criaTourStops(marcadores);
+
+            //     // Crie uma janela de informações para compartilhar entre os marcadores.
+            //     const infoWindow = new google.maps.InfoWindow();
+            //     window.infoWindow = infoWindow;
+                
+            //     // Cria os marcadores
+            //     tourStops.forEach(function({ position, title, label, cor }){
+            //         criaMarcadores(map4, position, title, label, cor);
+            //     });
+
+            // }
+            // setTimeout(initUHIP, 9000);
+            
+            // const urlAPIUsinaUHAI = 'http://54.94.47.11:3000/usinas/UHAI';
+            // const urlAPIEstacoesUHAI = 'http://54.94.47.11:3000/estacoes/UHAI';
+            // const urlPoligonoKMLUHAI = 'http://3.140.139.163/map/UHAI.txt';
+            
+            // async function initUHAI() {
+            //     var  [dadosUsinaApiUHAI, dadosEstacoesAPIUHAI] = await Promise.all([getData(urlAPIUsinaUHAI), getData(urlAPIEstacoesUHAI)]);
+            //     var usina = dadosUsinaApiUHAI.usina, marcadores =  dadosEstacoesAPIUHAI.estacoes;
+                
+            //     const map5 = criaMapa("map5", usina.zoom, usina.lat, usina.lng, "651adc19a155db5e5f99451d");
+                
+            //     const geoXml = new geoXML3.parser({ map: map5, singleInfoWindow: true });
+
+            //     // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+            //     geoXml.parse(urlPoligonoKMLUHAI);
+
+            //     var tourStops = new Array();
+            //     tourStops = criaTourStops(marcadores);
+
+            //     // Crie uma janela de informações para compartilhar entre os marcadores.
+            //     const infoWindow = new google.maps.InfoWindow();
+            //     window.infoWindow = infoWindow;
+                
+            //     // Cria os marcadores
+            //     tourStops.forEach(function({ position, title, label, cor }){
+            //         criaMarcadores(map5, position, title, label, cor);
+            //     });
+
+            // }
+            // setTimeout(initUHAI, 12000);
+            
+            // const urlAPIUsinaUTPS = 'http://54.94.47.11:3000/usinas/UTPS';
+            // const urlAPIEstacoesUTPS = 'http://54.94.47.11:3000/estacoes/UTPS';
+            // const urlPoligonoKMLUTPS = 'http://3.140.139.163/map/UTPS.txt';
+            
+            // async function initUTPS() {
+            //     var  [dadosUsinaApiUTPS, dadosEstacoesAPIUTPS] = await Promise.all([getData(urlAPIUsinaUTPS), getData(urlAPIEstacoesUTPS)]);
+            //     var usina = dadosUsinaApiUTPS.usina, marcadores =  dadosEstacoesAPIUTPS.estacoes;
+                
+            //     const map7 = criaMapa("map7", usina.zoom, usina.lat, usina.lng, "651adc6b50d3881e5fcabc09");
+                
+            //     const geoXml = new geoXML3.parser({ map: map7, singleInfoWindow: true });
+
+            //     // Carrega o arquivo KML e analisa as coordenadas para criar um polígono
+            //     geoXml.parse(urlPoligonoKMLUTPS);
+
+            //     var tourStops = new Array();
+            //     tourStops = criaTourStops(marcadores);
+
+            //     // Crie uma janela de informações para compartilhar entre os marcadores.
+            //     const infoWindow = new google.maps.InfoWindow();
+            //     window.infoWindow = infoWindow;
+                
+            //     // Cria os marcadores
+            //     tourStops.forEach(function({ position, title, label, cor }){
+            //         criaMarcadores(map7, position, title, label, cor);
+            //     });
+
+            // }
+            // setTimeout(initUTPS, 15000);
+            
+			// function extrairCoordenadasDoKML(textoKML) {
+			// 	const parser = new DOMParser();
+			// 	const docKML = parser.parseFromString(textoKML, 'text/xml');
+
+			// 	// Encontrar todos os elementos Placemark no KML
+			// 	const placemarks = docKML.querySelectorAll('Placemark');
+				
+			// 	const listaDeCoordenadas = [];
+			// 	let i = 1;
+			// 	placemarks.forEach((placemark) => {
+			// 		// Extrair as coordenadas de cada Placemark
+			// 		const coordenadas = placemark.querySelector('coordinates').textContent;
+					
+			// 		// Dividir as coordenadas em um array de pares [longitude, latitude]
+			// 		const paresDeCoordenadas = coordenadas.split(' ');
+
+			// 		const arrayDeCoordenadas = paresDeCoordenadas.map((par) => {
+			// 			const [lng, lat] = par.split(',');
+			// 			return [parseFloat(lng), parseFloat(lat)]
+			// 		});
+			// 		const coord = arrayDeCoordenadas[0];
+			// 		listaDeCoordenadas.push({
+			// 			label: i,
+			// 			position: {lat: coord[1], lng: coord[0]},
+			// 		});
+			// 		i = i+1;
+			// 	});
+
+			// 	return listaDeCoordenadas;
+			// }
+
+            // window.addEventListener('beforeunload', function () {
+            //     auth.setAuthenticated(false);
+            // });
+
+        </script>        
+    </body>
+</html>
