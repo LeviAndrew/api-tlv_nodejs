@@ -302,16 +302,16 @@
 					var popupContent = content;
 
 					// Define a URL da imagem do ícone personalizado
-					const customIconUrl = 'https://i.ibb.co/92SF1H4/casa.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/
+					const customIconUrl = 'https://i.ibb.co/prckGzs/Casa-4x.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/  // https://i.ibb.co/92SF1H4/casa.png
 					const marker = new google.maps.Marker({
-					position,
-					map,
-					title: title,
-					icon: {
-						url: customIconUrl,
-						scaledSize: new google.maps.Size(22, 22), // Tamanho do ícone
-						anchor: new google.maps.Point(11, 22), // Ponto de ancoragem (ponto no meio inferior da imagem)
-					},
+						position,
+						map,
+						title: title,
+						icon: {
+							url: customIconUrl,
+							scaledSize: new google.maps.Size(22, 22), // Tamanho do ícone
+							anchor: new google.maps.Point(11, 22), // Ponto de ancoragem (ponto no meio inferior da imagem)
+						},
 					});
 
 					// Eventos de clique dos marcadores
@@ -341,16 +341,16 @@
 						// Cria os marcadores dos PE
 						listaDeCoordenadasPE.forEach(function({ position, label, title }){
 							// Define a URL da imagem do ícone personalizado
-							const customIconUrl = 'https://i.ibb.co/g7ymSN1/maker-PE-sem-Fundo.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/
+							const customIconUrl = 'https://i.ibb.co/WxcQkkk/Ponto-de-encontro-4x.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/  // https://i.ibb.co/g7ymSN1/maker-PE-sem-Fundo.png
 							const marker = new google.maps.Marker({
-							position,
-							map,
-							title,
-							icon: {
-								url: customIconUrl,
-								scaledSize: new google.maps.Size(24, 24), // Tamanho do ícone
-								anchor: new google.maps.Point(12, 24), // Ponto de ancoragem (ponto no meio inferior da imagem)
-							},
+								position,
+								map,
+								title,
+								icon: {
+									url: customIconUrl,
+									scaledSize: new google.maps.Size(24, 24), // Tamanho do ícone
+									anchor: new google.maps.Point(12, 24), // Ponto de ancoragem (ponto no meio inferior da imagem)
+								},
 							});
 						});
 					})
@@ -369,11 +369,11 @@
 			function criaPopupPop(descrp, position, datas, urlImages) {
 				var imagemArrayString = urlImages.join(';');
 				var html = "";
-				// var testeUrlImage = 'https://abii.com.br/wp-content/uploads/2022/06/28.png'; // Alterar a url da imagem para foto das casas
+				// https://i.pinimg.com/550x/81/b8/ec/81b8ec9c3450c00ef1d9dbfc1d6de9d6.jpg; // imagem antiga da camera
 				html += '<div>' +
 				'<h3 class="first-heading">Detalhes - ' + descrp + '</h3>' +
 				'<div style="display: flex; align-items: center;"><p>Rota: <a href="https://www.google.com/maps?q=' + position.lat + ',' + position.lng + '" target="_blank">Me leve até aqui!</a></p>' +
-                '<img src="https://i.pinimg.com/550x/81/b8/ec/81b8ec9c3450c00ef1d9dbfc1d6de9d6.jpg" alt="Ícone de foto" style="cursor: pointer; width: 20px; height: 20px; margin-left: 5px; text-align:right" onclick="exibirImagem(this)" data-imagem-array="' + imagemArrayString + '">' +
+                '<img src="https://i.ibb.co/GWKZn7h/Camera-4x.png" alt="Ícone de foto" style="cursor: pointer; width: 20px; height: 20px; margin-left: 5px; text-align:right" onclick="exibirImagem(this)" data-imagem-array="' + imagemArrayString + '">' +
                 // '<img src="https://cdn.icon-icons.com/icons2/935/PNG/512/upload_icon-icons.com_73118.png" alt="Ícone de upload" style="cursor: pointer; width: 20px; height: 20px; margin-left: 5px; text-align:right; disable: true;" onclick="exibirImagem(this)" data-imagem-array="' + imagemArrayString + '">' +
 				'</div><div class="measure-parameters" style="text-align:left; padding: 5px">' +
                 '<th> Município: <th/><th>' +  datas[0] + '</th><br><br>' +
@@ -486,10 +486,10 @@
 				return listaDeCoordenadas;
 			}
 
-			window.addEventListener('beforeunload', function () {
-				// Define a variável isAuthenticated como false ao fechar a página
-				auth.setAuthenticated(false);
-			});
+			// window.addEventListener('beforeunload', function () {
+			// 	// Define a variável isAuthenticated como false ao fechar a página
+			// 	auth.setAuthenticated(false);
+			// });
 
 		</script>
 	</body>

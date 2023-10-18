@@ -13,62 +13,192 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            /* height: 100vh;
+            width: 100%; */
         }
 
         h1 {
             text-align: center;
             color: #333;
+            /* font-family: 'Times New Roman'; */
         }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-            text-align: center;
-        }
-
-        li {
-            margin: 20px;
-        }
-
-        a {
-            text-decoration: none;
-            color: #007bff;
+        h3 {
             font-weight: bold;
         }
 
-        a:hover {
-            text-decoration: underline;
+        .map {
+            border: 2px solid #ccc;
+            border-radius: 20px;
+            background-color:aliceblue;
+            background-size: cover;
+            cursor: pointer;
+            box-sizing: border-box;
+            display: inline-block; /* Exibe as divs internas uma ao lado da outra */
+            width: 30%; /* Define a largura das divs internas (ajuste conforme necessário) */
+            margin: 1%; /* Adicione uma pequena margem entre as divs internas */
+        }
+        .container {
+            width: 100%; /* Defina a largura da div pai */
+            text-align: left; /* Alinhe o conteúdo ao centro (opcional) */
+        }
+
+        .child {
+            width: 45%;
+            margin: 1%;
+            display: inline-block;
+        }
+
+        .top {
+            text-align: center;
+        }
+
+        .bottom {
+            text-align: center;
+            padding: 10px;
+            padding-top: 0;
+        }
+
+        .icon {
+            float: right;
+            margin-top: 10px;
+            margin-right: 10px;
+            width: 22px;
+            height: 22px;
         }
     </style>
     <script type="text/javascript" src="auth.js"></script>
 </head>
 <body>
-    <div>
+    <div style="width: 90%;">
         <h1>Escolher Mapa</h1>
-        </br>
-        <h3>ENGIE:</h3>
-        <ul>
-            <li><a href="http://3.140.139.163/map/UHIT_api.html">Mapa de UHIT</a></li>
-            <li><a href="http://3.140.139.163/map/UHMA_api.html">Mapa de UHMA</a></li>
-            <li><a href="http://3.140.139.163/map/UHPF_api.html">Mapa de UHPF</a></li>
-        </ul>
-        <h3>Grupo ALIANÇA:</h3>
-        <ul>
-            <li><a href="http://3.140.139.163/map/UHIP_api.html">Mapa de UHIP</a></li>
-            <li><a href="http://3.140.139.163/map/UHAI_api.html">Mapa de UHAI</a></li>
-            <li><a href="http://3.140.139.163/map/UHIP_cad_pop.html">Mapa Populacional de UHIP</a></li>
-        </ul>
-        <h3>UTPS:</h3>
-        <ul>
-            <li><a href="http://3.140.139.163/map/UTPS_api.html">Mapa de UTPS</a></li>
-        </ul>
-        </br>
-        <h4>Portifólio:</h4>
-        <ul>
-            <li><a href="http://3.140.139.163/map/portifolio.html"><small>Acesse todos os mapas!</small></a></li>
-        </ul>
+        </br></br></br></br>
+
+        <div style="width: 100%;">
+
+            <div class="child">
+                <h3 style="margin-left: 20px;">ENGIE</h3>
+                
+                <div class="container">
+
+                    <div class="map" href="http://3.140.139.163/map/UHIT_api.html">
+                        <img src="https://i.ibb.co/WxcQkkk/Ponto-de-encontro-4x.png" class="icon" alt="Ícone">
+                        <div class="top">
+                            <p>Mapa</p>
+                        </div>
+                        <div class="bottom">
+                            <h1>UHIT</h1>
+                        </div>
+                    </div>
+        
+                    <div class="map" href="http://3.140.139.163/map/UHMA_api.html">
+                        <img src="https://i.ibb.co/WxcQkkk/Ponto-de-encontro-4x.png" class="icon" alt="Ícone">
+                        <div class="top">
+                            <p>Mapa</p>
+                        </div>
+                        <div class="bottom">
+                            <h1>UHMA</h1>
+                        </div>
+                    </div>
+        
+                    <div class="map" href="http://3.140.139.163/map/UHPF_api.html">
+                        <img src="https://i.ibb.co/WxcQkkk/Ponto-de-encontro-4x.png" class="icon" alt="Ícone">
+                        <div class="top">
+                            <p>Mapa</p>
+                        </div>
+                        <div class="bottom">
+                            <h1>UHPF</h1>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="child">
+                <h3 style="margin-left: 20px;">Grupo ALIANÇA</h3>
+                
+                <div class="container">
+
+                    <div class="map" href="http://3.140.139.163/map/UHIP_api.html">
+                        <img src="https://i.ibb.co/WxcQkkk/Ponto-de-encontro-4x.png" class="icon" alt="Ícone">
+                        <div class="top">
+                            <p>Mapa</p>
+                        </div>
+                        <div class="bottom">
+                            <h1>UHIP</h1>
+                        </div>
+                    </div>
+        
+                    <div class="map" href="http://3.140.139.163/map/UHAI_api.html">
+                        <img src="https://i.ibb.co/28c2rMZ/Populacional-4x.png" class="icon" alt="Ícone">
+                        <div class="top">
+                            <p>Mapa Populacional</p>
+                        </div>
+                        <div class="bottom">
+                            <h1>UHIP</h1>
+                        </div>
+                    </div>
+        
+                    <div class="map" href="http://3.140.139.163/map/UHAI_api.html">
+                        <img src="https://i.ibb.co/WxcQkkk/Ponto-de-encontro-4x.png" class="icon" alt="Ícone">
+                        <div class="top">
+                            <p>Mapa</p>
+                        </div>
+                        <div class="bottom">
+                            <h1>UHAI</h1>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    
+        </br></br>
+
+        <div style="width: 100%;">
+
+            <div class="child">
+                <h3 style="margin-left: 20px;">UHTS</h3>
+                
+                <div class="container">
+
+                    <div class="map" href="http://3.140.139.163/map/UTPS_api.html">
+                        <img src="https://i.ibb.co/WxcQkkk/Ponto-de-encontro-4x.png" class="icon" alt="Ícone">
+                        <div class="top">
+                            <p>Mapa</p>
+                        </div>
+                        <div class="bottom">
+                            <h1>UTPS</h1>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="child">
+                <h3 style="margin-left: 20px;">Portifólio</h3>
+                
+                <div class="container">
+
+                    <div class="map" href="http://3.140.139.163/map/portifolio.html">
+                        <img src="https://i.ibb.co/WxcQkkk/Ponto-de-encontro-4x.png" class="icon" alt="Ícone">
+                        <div class="top">
+                            <p>Mapas</p>
+                        </div>
+                        <div class="bottom">
+                            <h1>Visão Geral</h1>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+        </div>
+
     </div>
+
     <script>
         // Verifica a autenticação antes de executar qualquer código específico da página
         const userAuth = auth.isAuthenticated();
