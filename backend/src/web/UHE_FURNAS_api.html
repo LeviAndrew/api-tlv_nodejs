@@ -5,13 +5,9 @@
 		<meta charset="UTF-8">
 		<style>
 			#map {
-				position: relative;
 				width: 1870px;
 				height: 910px;
-				z-index: 1;
 			}
-
-			/* Estilos para deixar as informações no Popup com aparência de tabela */
 			.measure-parameters {
 				max-width: 400px;
 				display: flex;
@@ -32,182 +28,82 @@
 			#logo {
 				position: absolute;
 				left: 0.7%; /* Posição horizontal da imagem em relação à margem esquerda */
-				top: 84.6%; /* Posição vertical da imagem em relação à margem superior */
+				top: 84.2%; /* Posição vertical da imagem em relação à margem superior */
 				width: 100px; /* Largura da imagem */
 				height: 100px; /* Altura da imagem */
 				z-index: 2; 
 			}
-			.custom-icon {
-				width: 32px;
-				height: 32px;
-			}
-			#imagemFullscreen {
-				display: none;
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background-color: rgba(0, 0, 0, 0.9);
-				z-index: 3;
-			}
-			#imagemExibida {
-				position: absolute;
-				left: 50%;
-				top: 50%;
-				transform: translate(-50%, -50%);
-				max-width: 90%;
-				max-height: 90%;
-				cursor: pointer;
-			}
-			#fecharImagemBtn {
-				position: absolute;
-				top: 10px;
-				right: 10px;
-				background-color: rgba(255, 255, 255, 0.8);
-				border: none;
-				border-radius: 50%;
-				width: 30px;
-				height: 30px;
-				font-size: 16px;
-				cursor: pointer;
-				display: none;
-			}
 		</style>
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACgKxrAX5zAD5nsC5KCvPF07tN1nXgUDE&v=beta&libraries=marker&callback=initMap&v=beta"></script>
+		<script 
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACgKxrAX5zAD5nsC5KCvPF07tN1nXgUDE&v=beta&libraries=marker&callback=initMap&v=beta">
+		</script>
+    	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 		<script type="text/javascript" src="geoxml3.js"></script>
 		<script src="dist/geolib.js"></script>
 		<script src="dist/geolib.isPointInsideRobust.js"></script>
 		<script type="text/javascript" src="auth.js"></script>
 	</head>
 	<body>
-        <a href="https://www.televale.com.br/"><img id="logo" src="https://media.licdn.com/dms/image/C4E0BAQE-ZZaURHu6jQ/company-logo_200_200/0/1626287863241?e=1698883200&v=beta&t=IhPJKW9tC7i7nZjZloppNuAJkkF_uLB6tFmxIp7yaQk" alt="Logo da Empresa"></a>
+		<img id="logo" src="https://media.licdn.com/dms/image/C4E0BAQE-ZZaURHu6jQ/company-logo_200_200/0/1626287863241?e=1698883200&v=beta&t=IhPJKW9tC7i7nZjZloppNuAJkkF_uLB6tFmxIp7yaQk" alt="Logo da Empresa">
 		<div id="map"></div>
-        <div id="imagemFullscreen">
-            <img id="imagemExibida" onclick="fecharImagem()">
-			<button id="anteriorBtn" style="position: absolute; top: 50%; left: 20px;" onclick="trocarImagem(imagemAtualIndex, -1, urlArray)"> Back </button>
-			<button id="proximoBtn" style="position: absolute; top: 50%; right: 20px;" onclick="trocarImagem(imagemAtualIndex, 1, urlArray)"> Next </button>
-			<button id="fecharImagemBtn" onclick="fecharImagem()">X</button>
-        </div>
-		
 		<script type="text/javascript">
 			// Verifica a autenticação antes de executar qualquer código específico da página
-			const userAuth = auth.isAuthenticated();
-			console.log("Auth mapa: ", userAuth);
-			if (!userAuth) {
-				// Redirecione para a página de login
-				window.location.href = "http://3.140.139.163/map/login.html";
-			}
+			// const userAuth = auth.isAuthenticated();
+			// console.log("Auth mapa: ", userAuth);
+			// if (!userAuth) {
+			// 	// Redirecione para a página de login
+			// 	window.location.href = "http://3.140.139.163/map/login.html";
+			// }
 
-			// const urlJSON = 'http://3.140.139.163/map/UHE_FURNAS.JSON';
-			const urlAPIUsinas = 'http://54.94.47.11:3000/usinas/UHE_FURNAS';
-			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHE_FURNAS';
-			const urlAPIPop = 'http://54.94.47.11:3000/cad_pop/UHE_FURNAS';
-			const urlPoligonoKML = 'http://3.140.139.163/map/coordenadas/zonas/UHE_FURNAS.txt';
-			const urlRotasKML = 'http://3.140.139.163/map/coordenadas/pontos_rotas/rotas_fuga_uhe_furnas.txt';
-			const urlPontosEncrontoKML = 'http://3.140.139.163/map/coordenadas/pontos_rotas/ponto_encontro_uhe_furnas.txt';
+			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/FURNAS';
+			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/FURNAS';
+			const urlPoligonoKML = 'http://3.140.139.163/map/coordenadas/zonas/FURNAS.txt';
 			
 			// Variável global para armazenar informações
-			var allMarkers = [], imagemAtualIndex = 0, urlArray = [];
+			var allMarkers = [];
+
+			// Constantes globais
+			const COR_VERDE = '#00FF00', COR_VERMELHA = '#FF0000', COR_CINZA = '#818181';
 
 			async function getData(URL) {
 				try {
-					const request = new XMLHttpRequest();
 					const timestamp = new Date().getTime(); // Generate a unique timestamp
-					const cacheBusterURL = URL + '?timestamp=' + timestamp; // usado para evitar cache do browser
-					request.open('GET', cacheBusterURL, false); // Make the request synchronous by passing false 
-					await request.send();
-					if (request.status === 200) {
-						const data = JSON.parse(request.responseText);
-						// console.log(data);
-						return data;
+					const cacheBusterURL = `${URL}?timestamp=${timestamp}`; // usado para evitar cache do browser
+					const response = await axios.get(cacheBusterURL);
+					if (response.status === 200) {
+						return response.data;
 					} else {
-						console.log('Error getting data:', request.status);
+						console.log('Error getting data:', response.status);
 						return null;
 					}
 				} catch (error) {
-					console.log('Error getting data:', error);
+					console.log('Error getting data catch:', error);
 					return null;
 				}
 			}
-			
+
 			// Função para criar o mapa
 			async function initMap() {
-				// var dadosE3 = await getData(urlJSON);
-				var dadosPop = await getData(urlAPIPop); // DESCOMENTAR DEPOIS
-				const  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getData(urlAPIUsinas), getData(urlAPIEstacoes)]);
-				var usina = dadosUsinaApi.usina;
-				var marcadores =  dadosEstacoesAPI.estacoes;
-				var pops = dadosPop.pops;
-				console.log("usina init: ", dadosUsinaApi);
-				console.log("marcadores init: ", dadosEstacoesAPI);
-				console.log("dadosPop init: ", pops);
+				var  [dadosUsinaApi, dadosEstacoesAPI] = await Promise.all([getData(urlAPIUsina), getData(urlAPIEstacoes)]);
+				var usina = dadosUsinaApi.usina, marcadores =  dadosEstacoesAPI.estacoes;
+				console.log("dadosUsinaApi init: ", dadosUsinaApi);
+				console.log("dadosEstacoesAPI init: ", dadosEstacoesAPI);
 				
-				document.title = usina.descrp;
+				document.title = usina.e3_label;
 				
-				const map = await new google.maps.Map(document.getElementById("map"), { // Chamada da API do Google Maps -> Gera o Mapa
+				const map = new google.maps.Map(document.getElementById("map"), { // Chamada da API do Google Maps -> Gera o Mapa
 					zoom: usina.zoom,
 					center: { lat: usina.lat, lng: usina.lng },
-					mapId: "651ad45a9e0d253889d4f387",
+					mapId: "651ad47806a6ee0e69871c5a",
 				});
-
+				
 				const geoXml = new geoXML3.parser({
 					map: map,
+					singleInfoWindow: true
 				});
 
-				// Carrega o arquivo KML do polígono da ÁREA INUNDÁVEL
+				// Carrega o arquivo KML e analisa as coordenadas para criar um polígono
 				geoXml.parse(urlPoligonoKML);
-
-				 // Carregue o arquivo KML e adicione a rota ao mapa
-				 fetch(urlRotasKML)
-                .then((response) => response.text())
-                .then((kmlData) => {
-					// Carrega o arquivo KML das ROTAS DE FUGA
-					geoXml.parseKmlString(kmlData);
-					// Coordenadas removidas
-					// <Placemark><name>BR 050</name><Point><coordinates>-47.78813416269598,-19.98547822954861,0</coordinates></Point></Placemark><Placemark><name>Fosfertil</name><Point><coordinates>-47.87688238164778,-19.98502546155629,0</coordinates></Point></Placemark><Placemark><name>Delta</name><Point><coordinates>-47.77549384460837,-19.97372291260062,0</coordinates></Point></Placemark><Placemark><name>BR 464</name><Point><coordinates>-47.81009725152034,-19.97890171688396,0</coordinates></Point></Placemark><Placemark><name>Porto de Areia</name><Point><coordinates>-47.87200674159876,-20.00735843000622,0</coordinates></Point></Placemark><Placemark><name>Coutry Clube</name><Point><coordinates>-47.76807136414112,-19.98451074349539,0</coordinates></Point></Placemark>
-					// <Placemark><name>BR 050</name><Point><coordinates>-47.78813416269598,-19.98547822954861,0</coordinates></Point></Placemark><Placemark><name>Fosfertil</name><Point><coordinates>-47.87688238164778,-19.98502546155629,0</coordinates></Point></Placemark><Placemark><name>Delta</name><Point><coordinates>-47.77549384460837,-19.97372291260062,0</coordinates></Point></Placemark><Placemark><name>BR 464</name><Point><coordinates>-47.81009725152034,-19.97890171688396,0</coordinates></Point></Placemark><Placemark><name>Porto de Areia</name><Point><coordinates>-47.87200674159876,-20.00735843000622,0</coordinates></Point></Placemark><Placemark><name>Coutry Clube</name><Point><coordinates>-47.76807136414112,-19.98451074349539,0</coordinates></Point></Placemark>
-					// <Placemark><name>Cerâminca</name><Point><coordinates>-47.77849688099406,-19.99139883355228,0</coordinates></Point></Placemark><Placemark><name>BR 050</name><Point><coordinates>-47.78813416269598,-19.98547822954861,0</coordinates></Point></Placemark>
-					// <Placemark><name>Fertigran</name><Point><coordinates>-47.76484567774617,-19.99229860299679,0</coordinates></Point></Placemark><Placemark><name>Fosfertil</name><Point><coordinates>-47.87688238164778,-19.98502546155629,0</coordinates></Point></Placemark><Placemark><name>Raízen</name><Point><coordinates>-47.7993594386007,-19.98893967228874,0</coordinates></Point></Placemark>
-                })
-                .catch((error) => {
-                    console.error("Erro ao carregar o arquivo KML:", error);
-                });
-
-				// Verifica se ponto de coordenada está dentro do Polígono
-				// loadKmlFileAndExtractPolygonCoordinates(urlPoligonoKML)
-				// .then(polygonCoordinates => {
-				// 	// Agora você tem as coordenadas do polígono
-				// 	console.log('Coordenadas do polígono:', polygonCoordinates);
-					
-				// 	// Verificar se um ponto está dentro do polígono
-				// 	const pontoTeste = { lat: -27.277978, lng: -52.388827 }, pontoTeste2 = { lat: -27.281806, lng: -52.392326 }, pontoTeste3 = { lat: -27.306581, lng: -52.392388 };
-				// 	const pontoEstaDentroDoPoligono = geolib.isPointInside(pontoTeste, polygonCoordinates);
-				// 	const pontoEstaDentroDoPoligono2 = geolib.isPointInside(pontoTeste2, polygonCoordinates);
-				// 	const pontoEstaDentroDoPoligono3 = geolib.isPointInside(pontoTeste3, polygonCoordinates);
-				// 	console.log("testes:", pontoEstaDentroDoPoligono, pontoEstaDentroDoPoligono2, pontoEstaDentroDoPoligono3);
-				// 	if (pontoEstaDentroDoPoligono) {
-				// 		console.log('O ponto 1 está dentro do polígono.');
-				// 	} else {
-				// 		console.log('O ponto 1 está fora do polígono.');
-				// 	}
-					
-				// 	if (pontoEstaDentroDoPoligono2) {
-				// 		console.log('O ponto 2 está dentro do polígono.');
-				// 	} else {
-				// 		console.log('O ponto 2 está fora do polígono.');
-				// 	}
-					
-				// 	if (pontoEstaDentroDoPoligono3) {
-				// 		console.log('O ponto 3 está dentro do polígono.');
-				// 	} else {
-				// 		console.log('O ponto 3 está fora do polígono.');
-				// 	}
-
-				// })
-				// .catch(error => {
-				// 	console.error('Erro:', error);
-				// });
 
 				var tourStops = new Array();
 				for (var marcador of marcadores) {
@@ -221,60 +117,42 @@
 					marcador.alm_hdw,
 					marcador.sts_ping
 					];
-					var position = { lat: marcador.lat, lng: marcador.lng };
+					var position = { lat: marcador.lat, lng: marcador.lng } 
 					var cor;
 					if (marcador.sts_ping == false) {
-						cor = '#FF0000'; // Cor vermelha
+						cor = COR_VERMELHA;
 					} else if (marcador.sts_ping == true) {
-						cor = '#00FF00'; // Cor verde
+						cor = COR_VERDE;
 					} else {
-						cor = '#818181'; // Cor cinza
+						cor = COR_CINZA;
 					}
 
-					var label = "";
-					if (marcador.e3_label.charAt(0) == "C") { // Se for COL00
-						label = marcador.e3_label.replace(/.{2}$/, '');
-					} else { // Se for ER
-						label = marcador.e3_label.replace(/^.{2}/, '');
-					}
+                    var label = "";
+                    if (marcador.e3_label.charAt(0) == "C" || marcador.e3_label.charAt(0) == "R") { // Se for COL ou REP
+                        label = marcador.e3_label.replace(/.{2}$/, '');
+                    } else { // Se for ER
+                        label = marcador.e3_label.replace(/^.{2}/, '');
+                    }
 					
 					var obj = {
 						position: position,
 						title: marcador.descrp,
 						label: label,
+						content: criaPopupMarcador(marcador.descrp, position, infoArray, infoSts),
 						cor: cor
 					};
 
 					tourStops.push(obj);
-				}
-
-                var tourPopulation = new Array();
-				for (var marcador of pops) {
-					var datas = [
-                            marcador.municipio,
-                            marcador.proprietario,
-                            marcador.telefone,
-                            marcador.quant_pessoas,
-							marcador.abrigo
-					];
-					var position = { lat: marcador.lat, lng: marcador.lng };
-					var obj = {
-						position: position,
-						title: marcador.proprietario,
-                        label: marcador.ponto,
-						content: criaPopupPop(marcador.proprietario, position, datas, marcador.url_foto || ["", ""]),
-					};
-
-					tourPopulation.push(obj);
 				}
 				
 				// Crie uma janela de informações para compartilhar entre os marcadores.
 				const infoWindow = new google.maps.InfoWindow();
 				window.infoWindow = infoWindow;
 				
-				// Cria os marcadores das Estações
-				tourStops.forEach(function({ position, title, label, cor }){
-
+				// Cria os marcadores	
+				tourStops.forEach(function({ position, title, label, content, cor }){
+					var popupContent = content;
+							
 					const marker = new google.maps.Marker({
 						position,
 						map,
@@ -283,7 +161,7 @@
 							path: google.maps.SymbolPath.CIRCLE,
 							fillColor: cor,
 							fillOpacity: 1,
-							scale: 9,
+							scale: 8,
 							strokeWeight: 1,
 							rotation: 0,
             				labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
@@ -294,26 +172,7 @@
 							fontWeight: 'bold' // Estilo do texto do label
 						}
 					});
-
-				});
 				
-				// Cria os marcadores das Residências
-				tourPopulation.forEach(function({ position, title, label, content }){
-					var popupContent = content;
-
-					// Define a URL da imagem do ícone personalizado
-					const customIconUrl = 'https://i.ibb.co/prckGzs/Casa-4x.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/  // https://i.ibb.co/92SF1H4/casa.png
-					const marker = new google.maps.Marker({
-						position,
-						map,
-						title: title,
-						icon: {
-							url: customIconUrl,
-							scaledSize: new google.maps.Size(22, 22), // Tamanho do ícone
-							anchor: new google.maps.Point(11, 22), // Ponto de ancoragem (ponto no meio inferior da imagem)
-						},
-					});
-
 					// Eventos de clique dos marcadores
 					marker.addListener("click", () => {
 						infoWindow.close();
@@ -324,172 +183,174 @@
 					allMarkers.push({label: label, marker: marker, position: position, popupContent: popupContent});
 				});
 				
-				// Cria marcadores dos pontos de encontro
-				fetch(urlPontosEncrontoKML)
-					.then(response => {
-						// Verifique se a resposta da solicitação HTTP é bem-sucedida (status 200 OK)
-						if (!response.ok) {
-						throw new Error(`Erro ao buscar o arquivo KML. Status: ${response.status}`);
-						}
-						// Parse a resposta como texto
-						return response.text();
-					})
-					.then(data => {
-						// Agora, você pode chamar sua função para extrair as coordenadas do KML
-						const listaDeCoordenadasPE = extrairCoordenadasDoKML(data);
-						
-						// Cria os marcadores dos PE
-						listaDeCoordenadasPE.forEach(function({ position, label, title }){
-							// Define a URL da imagem do ícone personalizado
-							const customIconUrl = 'https://i.ibb.co/WxcQkkk/Ponto-de-encontro-4x.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/  // https://i.ibb.co/g7ymSN1/maker-PE-sem-Fundo.png
-							const marker = new google.maps.Marker({
-								position,
-								map,
-								title,
-								icon: {
-									url: customIconUrl,
-									scaledSize: new google.maps.Size(24, 24), // Tamanho do ícone
-									anchor: new google.maps.Point(12, 24), // Ponto de ancoragem (ponto no meio inferior da imagem)
-								},
-							});
-						});
-					})
-					.catch(error => {
-						console.error('Erro ao buscar o arquivo KML:', error);
-					});
-
 				// Função privada para obter o conteúdo HTML das janelas popup
 				function getPopupContent(markerLabel) {
 					var element = allMarkers.find(element => element.label == markerLabel);
 					return element.popupContent;
+				}        
+			}
+
+			// Atualiza os dados do mapa dinamicamente
+			async function updateMap(dados) {
+				var dadosEstacoesAPI = await getData(urlAPIEstacoes); // API <--> BD
+				var marcadores =  dadosEstacoesAPI.estacoes;
+				console.log("dadosEstacoesAPI update: ", dadosEstacoesAPI);
+				
+				for (var i of marcadores) {
+                    var marcador;
+                    if (i.e3_label.charAt(0) == "C") { // Se for COL
+						if (i.e3_label.charAt(4) == "0"){
+							var marcador = allMarkers.find(element => `${element.label}00` == i.e3_label);
+						} else {
+							var marcador = allMarkers.find(element => `${element.label}_R` == i.e3_label);
+						}
+                    } else if (i.e3_label.charAt(0) == "R") { // Se for REP
+						if (i.e3_label.charAt(4) == "1"){
+							var marcador = allMarkers.find(element => `${element.label}01` == i.e3_label);
+						} else {
+							var marcador = allMarkers.find(element => `${element.label}02` == i.e3_label);
+						}
+					} else { // Se for ER
+                        var marcador = allMarkers.find(element => `ER${element.label}` == i.e3_label);
+                    }
+
+					// Mudar cor dos marcadores
+					if (i.sts_ping == false) {
+						// marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_VERMELHA);
+						marcador.marker.setIcon({
+							path: google.maps.SymbolPath.CIRCLE,
+							fillColor: COR_VERMELHA,
+							fillOpacity: 1,
+							scale: 8,
+							strokeWeight: 1,
+							rotation: 0,
+							labelOrigin: new google.maps.Point(-0.05, -2),
+						});
+					} else if (i.sts_ping == true) {
+						// marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_VERDE);
+						marcador.marker.setIcon({
+							path: google.maps.SymbolPath.CIRCLE,
+							fillColor: COR_VERDE,
+							fillOpacity: 1,
+							scale: 8,
+							strokeWeight: 1,
+							rotation: 0,
+							labelOrigin: new google.maps.Point(-0.05, -2),
+						});
+					} else {
+						// marcador.marker.content.querySelector("path[class*='pin-view-background']").setAttribute("fill", COR_CINZA);
+						marcador.marker.setIcon({
+							path: google.maps.SymbolPath.CIRCLE,
+							fillColor: COR_CINZA,
+							fillOpacity: 1,
+							scale: 8,
+							strokeWeight: 1,
+							rotation: 0,
+							labelOrigin: new google.maps.Point(-0.05, -2),
+						});
+					}
+					
+					var infoArray = [`${i.timestamp_eqp}`];
+					var infoSts = [
+					i.alm_acss,
+					i.alm_alim,
+					i.alm_audio,
+					i.alm_cmd,
+					i.alm_com,
+					i.alm_hdw,
+					i.sts_ping
+					];
+					var position = { lat: marcador.lat, lng: marcador.lng } 
+					
+					// Atualizar janela popup de informações
+
+					var html = criaPopupMarcador(i.descrp, marcador.position, infoArray, infoSts);
+					marcador.popupContent = html;
+				}
+				
+				// Atualizar janela popup
+				var marcadorAtual = infoWindow.getAnchor();
+				var foo = allMarkers.find(element => element.marker == marcadorAtual);
+				if (foo) {
+					infoWindow.setContent(foo.popupContent);
 				}
 			}
 
 			// Função para criar o conteúdo HTML das janelas popup
-			function criaPopupPop(descrp, position, datas, urlImages) {
-				var imagemArrayString = urlImages.join(';');
+			function criaPopupMarcador(descrp, position, infoArray, infoSts) {
+				let chave, valor;
 				var html = "";
-				// https://i.pinimg.com/550x/81/b8/ec/81b8ec9c3450c00ef1d9dbfc1d6de9d6.jpg; // imagem antiga da camera
+
 				html += '<div>' +
 				'<h3 class="first-heading">Detalhes - ' + descrp + '</h3>' +
-				'<div style="display: flex; align-items: center;"><p>Rota: <a href="https://www.google.com/maps?q=' + position.lat + ',' + position.lng + '" target="_blank">Me leve até aqui!</a></p>' +
-                '<img src="https://i.ibb.co/GWKZn7h/Camera-4x.png" alt="Ícone de foto" style="cursor: pointer; width: 20px; height: 20px; margin-left: 5px; text-align:right" onclick="exibirImagem(this)" data-imagem-array="' + imagemArrayString + '">' +
-                // '<img src="https://cdn.icon-icons.com/icons2/935/PNG/512/upload_icon-icons.com_73118.png" alt="Ícone de upload" style="cursor: pointer; width: 20px; height: 20px; margin-left: 5px; text-align:right; disable: true;" onclick="exibirImagem(this)" data-imagem-array="' + imagemArrayString + '">' +
-				'</div><div class="measure-parameters" style="text-align:left; padding: 5px">' +
-                '<th> Município: <th/><th>' +  datas[0] + '</th><br><br>' +
-                '<th> Proprietário: <th/><th>' +  datas[1] + '</th><br><br>' + 
-                '<th> Telefone: <th/><th>' +  datas[2] + '</th><br><br>' + 
-                '<th> Quant. Pessoas: <th/><th>' +  datas[3] + '</th><br><br>' + 
-                '<th> Abrigo: <th/><th>' +  datas[4] + '</th></div>';
+				'<p>Rota: <a href="https://www.google.com/maps?q=' + position.lat + ',' + position.lng + '" target="_blank">Me leve até aqui!</a></p>' +
+				'<p> Ultimo Ping: ' + infoArray + '</p>' + '<div class="measure-parameters">';
 
+				for (j=0; j < infoSts.length; j++) {
+					let stsColor = "blue";
+					if (j == 0) {
+						chave = "Alarme de Acesso";
+						if (infoSts[0] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else if (j == 1) {
+						chave = "Alarme de Alimentacao";
+						if (infoSts[1] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else if (j == 2) {
+						chave = "Alarme de Audio";
+						if (infoSts[2] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else if (j == 3) {
+						chave = "Alarme de Comando";
+						if (infoSts[3] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else if (j == 4) {
+						chave = "Alarme de Comunicacao";
+						if (infoSts[4] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else if (j == 5) {
+						chave = "Alarme de Hardware";
+						if (infoSts[5] >= 0) {
+							valor = "Ativo", stsColor = "red";
+						} else {
+							valor = "Inativo";
+						}
+					} else {
+						chave = "Estado da Comunicacao";
+						if (infoSts[6] == false) {
+							valor = "Offline", stsColor = "red";
+						} else {
+							valor = "Online";
+						}
+					}
+					html += '<div style="text-align:left; color: ' + stsColor + '">' +
+								'<th>' + chave + ': <th/><th>' +  valor + '</th>'
+							'</div>';
+				}
 				return html;
 			}
+			
+			// window.setInterval(updateMap, 45000); // Atualiza mapa a cada 45000 milisegundos (45 segundos)
 
-            function exibirImagem(arrayImages) {
-				const imagesArray = arrayImages.getAttribute('data-imagem-array').split(';');
-                const imagemExibida = document.getElementById("imagemExibida");
-                const imagemFullscreen = document.getElementById("imagemFullscreen");
-    			const fecharImagemBtn = document.getElementById("fecharImagemBtn");
-
-				urlArray = imagesArray;
-				imagemAtualIndex = 0;
-    			const urlImagem = imagesArray[imagemAtualIndex];
-
-                imagemExibida.src = urlImagem;
-				fecharImagemBtn.style.display = "block";
-				imagemFullscreen.style.display = 'block';
-            }
-
-			function trocarImagem(index, delta, buttonElement) {
-				const novoIndex = index + delta;
-				if (novoIndex >= 0 && novoIndex < buttonElement.length) {
-					imagemAtualIndex = novoIndex;
-				} else if (novoIndex >= buttonElement.length) {
-					imagemAtualIndex = 0;
-				} else {
-					imagemAtualIndex = buttonElement.length - 1;
-				}
-				document.getElementById('imagemExibida').src = buttonElement[imagemAtualIndex];
-			}
-
-            function fecharImagem() {
-                document.getElementById("imagemFullscreen").style.display = "none";
-    			document.getElementById("fecharImagemBtn").style.display = "none";
-				imagemAtualIndex = 0; // Redefine o índice da imagem atual
-            }
-
-			// Função que extrai as coordenadas do Polígono de um arquivo KML
-			function loadKmlFileAndExtractPolygonCoordinates(url) {
-				return new Promise((resolve, reject) => {
-					const xhr = new XMLHttpRequest();
-					xhr.open('GET', url);
-					xhr.onreadystatechange = () => {
-						if (xhr.readyState === 4) {
-							if (xhr.status === 200) {
-							const kmlContent = xhr.responseText;
-							const parser = new DOMParser();
-							const xmlDoc = parser.parseFromString(kmlContent, 'text/xml');
-							
-							// Extrair as coordenadas do polígono
-							const polygonCoordinates = [];
-							const coordinatesNodes = xmlDoc.getElementsByTagName('coordinates');
-							for (let i = 0; i < coordinatesNodes.length; i++) {
-								const coordinatesText = coordinatesNodes[i].textContent.trim();
-								const coordinates = coordinatesText.split(',').map(coord => {
-									const [lng, lat] = coord.split(',').map(parseFloat);
-									return { lat, lng };
-								});
-								polygonCoordinates.push(...coordinates);
-							}
-							
-								resolve(polygonCoordinates);
-							} else {
-								reject(new Error(`Failed to load KML file: ${xhr.statusText}`));
-							}
-						}
-					};
-					xhr.send();
-				});
-			}
-						
-			function extrairCoordenadasDoKML(textoKML) {
-				const parser = new DOMParser();
-				const docKML = parser.parseFromString(textoKML, 'text/xml');
-
-				// Encontrar todos os elementos Placemark no KML
-				const placemarks = docKML.querySelectorAll('Placemark');
-				
-				const listaDeCoordenadas = [];
-				let i = 1;
-				placemarks.forEach((placemark) => {
-					// Extrair as coordenadas de cada Placemark
-					const coordenadas = placemark.querySelector('coordinates').textContent;
-					const name = placemark.querySelector('name').textContent;
-					
-					// Dividir as coordenadas em um array de pares [longitude, latitude]
-					const paresDeCoordenadas = coordenadas.split(' ');
-
-					const arrayDeCoordenadas = paresDeCoordenadas.map((par) => {
-						const [lng, lat] = par.split(',');
-						return [parseFloat(lng), parseFloat(lat)]
-					});					
-
-					const coord = arrayDeCoordenadas[0];
-					listaDeCoordenadas.push({
-						label: i,
-						position: {lat: coord[1], lng: coord[0]},
-						title: name
-					});
-					i = i+1;
-				});
-
-				return listaDeCoordenadas;
-			}
-
-			window.addEventListener('beforeunload', function () {
-				// Define a variável isAuthenticated como false ao fechar a página
-				auth.setAuthenticated(false);
-			});
+			// window.addEventListener('beforeunload', function () {
+			// 	// Define a variável isAuthenticated como false ao fechar a página
+			// 	auth.setAuthenticated(false);
+			// });
 
 		</script>
 	</body>
