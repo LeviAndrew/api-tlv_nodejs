@@ -11,6 +11,7 @@ const estacoesModel = require('../../models/Estacoes/estacoesModel');
 
 const getEstacoes = async (req, res) => {
     const { usina } = req.params;
+    console.log(`Buscando dados das estações da usina de ${usina}`);
     const estacoes = await estacoesModel.getEstacoes(usina);
     return res.status(200).json({estacoes: estacoes});
 };

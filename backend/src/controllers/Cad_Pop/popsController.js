@@ -6,6 +6,7 @@ const popsModel = require('../../models/Cad_Pop/popsModel');
 
 const getPops = async (req, res) => {
     const { usina } = req.params;
+    console.log(`Buscando dados do cadastro populacional da usina de ${usina}`);
     const pops = await popsModel.getPops(usina);
     return res.status(200).json({pops: pops});
 };

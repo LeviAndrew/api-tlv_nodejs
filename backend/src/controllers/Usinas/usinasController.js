@@ -11,6 +11,7 @@ const getAll = async (_req, res) => {
 
 const getUsina = async (req, res) => {
     const { usina } = req.params;
+    console.log(`Buscando dados da usina de ${usina}`);
     const usinas = await usinasModel.getUsina(usina);
     return res.status(200).json({usina: usinas[0]});
 };
