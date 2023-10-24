@@ -5,10 +5,16 @@
 const connection = require('../connection');
 
 const getPops = async (usina) => {
-    await connection.connect();
-    const pops = await connection.query(`SELECT * FROM ${usina.toLowerCase()}_cad_pop`);
-    // const pops = await connection.query(`SELECT * FROM cad_pop`);
-    return pops.rows;
+    const client = await connection.connect();
+    try {
+        console.log(`Conectou com o BD: ${usina}`);
+        const pops = await connection.query(`SELECT * FROM ${usina.toLowerCase()}_cad_pop`);
+        console.log(`Realizou a query pro BD: ${usina}`);
+        return pops.rows;
+    } finally {
+        client.release(); // Libere a conexão de volta para o pool
+        console.log(`Encerrou conexão com o BD: ${usina}`);
+    }
 };
 
 const getUser = async (username, password) => {

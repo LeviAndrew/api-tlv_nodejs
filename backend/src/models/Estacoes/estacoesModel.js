@@ -11,9 +11,16 @@ const connection = require('../connection');
 // };
 
 const getEstacoes = async (usina) => {
-    await connection.connect();
-    const estacoes = await connection.query(`SELECT * FROM ${usina.toLowerCase()}_estacoes`); // criar um get para cada usina
-    return estacoes.rows;
+    const client = await connection.connect();
+    try {
+        console.log(`Conectou com o BD: ${usina}`);
+        const estacoes = await connection.query(`SELECT * FROM ${usina.toLowerCase()}_estacoes`); // criar um get para cada usina
+        console.log(`Realizou a query pro BD: ${usina}`);
+        return estacoes.rows;
+    } finally {
+        client.release(); // Libere a conexão de volta para o pool
+        console.log(`Encerrou conexão com o BD: ${usina}`);
+    }
 };
 
 // const createEstacao = async (estacao) => {

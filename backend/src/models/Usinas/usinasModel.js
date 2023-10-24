@@ -11,9 +11,16 @@ const getAll = async () => {
 };
 
 const getUsina = async (usina) => {
-    await connection.connect();
-    const estacoes = await connection.query(`SELECT * FROM usinas WHERE e3_label = '${usina}'`);
-    return estacoes.rows;
+    const client = await connection.connect();
+    try {
+        console.log(`Conectou com o BD: ${usina}`);
+        const estacoes = await client.query(`SELECT * FROM usinas WHERE e3_label = '${usina}'`);
+        console.log(`Realizou a query pro BD: ${usina}`);
+        return estacoes.rows;
+    } finally {
+        client.release(); // Libere a conexão de volta para o pool
+        console.log(`Encerrou conexão com o BD: ${usina}`);
+    }
 };
 
 // const createUsina = async (usina) => {
