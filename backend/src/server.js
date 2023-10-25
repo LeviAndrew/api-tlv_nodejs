@@ -3,14 +3,9 @@
 /* eslint-disable semi */
 /* eslint-disable linebreak-style */
 const app = require('./app');
-// const http = require('http');
-
-// const server = http.createServer(app);
 
 require('dotenv').config();
 
 const API_PORT = process.env.API_PORT || 3000; // PORTA LOCAL DA API
 
 app.listen(API_PORT, () => console.log(`Server rodando na porta ${API_PORT}!`));
-
-// server.listen(API_PORT, () => console.log(`Server rodando na porta ${API_PORT}!`));
