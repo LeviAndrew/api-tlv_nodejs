@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?><kml><Document><Schema id="temp" /><Placemark>
+<name>UH PASSO FUNDO</name><Point><coordinates>-52.71844896325017,-27.47984161036921,0</coordinates></Point>
+</Placemark>
+<Placemark>
+<name>Central de Operação Local - COL</name><Point><coordinates>-48.14886799999999,-18.788967,0</coordinates></Point>
+</Placemark>
+<Placemark>
+<name>ER 01</name><Point><coordinates>-48.161056,-18.806444,0</coordinates></Point>
+</Placemark>
+<Placemark>
+<name>ER 02</name><Point><coordinates>-48.14721399999999,-18.803378,0</coordinates></Point>
+</Placemark></Document></kml>
