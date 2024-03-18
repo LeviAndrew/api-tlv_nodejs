@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 	<head>
-		<title>MAPA UHSM</title>
+		<title>MAPA UHET</title>
 		<meta charset="UTF-8">
 		<style>
 			#map {
-				width: 1870px;
-				height: 940px;
+				width: 1900px;
+				height: 990px;
 			}
 			.measure-parameters {
 				max-width: 400px;
@@ -27,8 +27,8 @@
 			}
 			#logo {
 				position: absolute;
-				left: 0.6%; /* Posição horizontal da imagem em relação à margem esquerda */
-				top: 88%; /* Posição vertical da imagem em relação à margem superior */
+				left: 0.7%; /* Posição horizontal da imagem em relação à margem esquerda */
+				top: 88.7%; /* Posição vertical da imagem em relação à margem superior */
 				width: 100px; /* Largura da imagem */
 				height: 100px; /* Altura da imagem */
 				z-index: 2; 
@@ -44,7 +44,7 @@
 		<script type="text/javascript" src="auth.js"></script>
 	</head>
 	<body>
-		<img id="logo" src="https://i.ibb.co/GJs1NHJ/logo-tlv.jpg" alt="Logo da Empresa">
+		<img id="logo" src="https://i.ibb.co/GJs1NHJ/logo-tlv.jpg" alt="Logo da Televale">
 		<div id="map"></div>
 		<script type="text/javascript">
 			// Verifica a autenticação antes de executar qualquer código específico da página
@@ -54,10 +54,10 @@
 			// 	// Redirecione para a página de login
 			// 	window.location.href = "http://3.140.139.163/map/login.html";
 			// }
-			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/UHSM';
-			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHSM';
-			const urlPoligonoKML = 'http://3.140.139.163/map/coordenadas/zonas/UHSM.txt';
-			// const urlCasasKML = 'http://3.140.139.163/map/coordenadas/casas/casas_UHSM.txt';
+
+			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/UHET';
+			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHET';
+			const urlPoligonoKML = 'http://3.140.139.163/map/coordenadas/zonas/UHET.txt';
 			
 			// Variável global para armazenar informações
 			var allMarkers = [];
@@ -94,7 +94,7 @@
 				const map = new google.maps.Map(document.getElementById("map"), { // Chamada da API do Google Maps -> Gera o Mapa
 					zoom: usina.zoom,
 					center: { lat: usina.lat, lng: usina.lng },
-					mapId: "651ad3cfea921a5d57496405",
+					mapId: "651ad46dd0057a00a13eb55f",
 				});
 				
 				const geoXml = new geoXML3.parser({
@@ -187,44 +187,7 @@
 				function getPopupContent(markerLabel) {
 					var element = allMarkers.find(element => element.label == markerLabel);
 					return element.popupContent;
-				}
-
-				// Cria marcadores das casas
-				// fetch(urlCasasKML)
-				// 	.then(response => {
-				// 		// Verifique se a resposta da solicitação HTTP é bem-sucedida (status 200 OK)
-				// 		if (!response.ok) {
-				// 		throw new Error(`Erro ao buscar o arquivo KML. Status: ${response.status}`);
-				// 		}
-				// 		// Parse a resposta como texto
-				// 		return response.text();
-				// 	})
-				// 	.then(data => {
-				// 		// Agora, você pode chamar sua função para extrair as coordenadas do KML
-				// 		const listaDeCoordenadas = extrairCoordenadasDoKML(data);
-						
-				// 		// Faça o que quiser com a lista de coordenadas
-				// 		console.log("listaDeCoordenadas: ", listaDeCoordenadas);
-						
-				// 		// Cria os marcadores das Residências
-				// 		listaDeCoordenadas.forEach(function({ position, label }){
-				// 			// Define a URL da imagem do ícone personalizado
-				// 			const customIconUrl = 'https://i.ibb.co/prckGzs/Casa-4x.png'; // Host de imagem gratuito // https://pt-br.imgbb.com/ // https://i.ibb.co/92SF1H4/casa.png
-				// 			const marker = new google.maps.Marker({
-				// 			position,
-				// 			map,
-				// 			icon: {
-				// 				url: customIconUrl,
-				// 				scaledSize: new google.maps.Size(16, 16), // Tamanho do ícone
-				// 				anchor: new google.maps.Point(8, 16), // Ponto de ancoragem (ponto no meio inferior da imagem)
-				// 			},
-				// 			});
-				// 		});
-				// 	})
-				// 	.catch(error => {
-				// 		console.error('Erro ao buscar o arquivo KML:', error);
-				// 	});
-
+				}        
 			}
 
 			// Atualiza os dados do mapa dinamicamente
@@ -375,40 +338,8 @@
 			window.setInterval(updateMap, 45000); // Atualiza mapa a cada 45000 milisegundos (45 segundos)
 
 			// window.addEventListener('beforeunload', function () {
-			// 	// Define a variável isAuthenticated como false ao fechar a página
 			// 	auth.setAuthenticated(false);
 			// });
-
-			function extrairCoordenadasDoKML(textoKML) {
-				const parser = new DOMParser();
-				const docKML = parser.parseFromString(textoKML, 'text/xml');
-
-				// Encontrar todos os elementos Placemark no KML
-				const placemarks = docKML.querySelectorAll('Placemark');
-				
-				const listaDeCoordenadas = [];
-				let i = 1;
-				placemarks.forEach((placemark) => {
-					// Extrair as coordenadas de cada Placemark
-					const coordenadas = placemark.querySelector('coordinates').textContent;
-					
-					// Dividir as coordenadas em um array de pares [longitude, latitude]
-					const paresDeCoordenadas = coordenadas.split(' ');
-
-					const arrayDeCoordenadas = paresDeCoordenadas.map((par) => {
-						const [lng, lat] = par.split(',');
-						return [parseFloat(lng), parseFloat(lat)]
-					});
-					const coord = arrayDeCoordenadas[0];
-					listaDeCoordenadas.push({
-						label: i,
-						position: {lat: coord[1], lng: coord[0]},
-					});
-					i = i+1;
-				});
-
-				return listaDeCoordenadas;
-			}
 
 		</script>
 	</body>

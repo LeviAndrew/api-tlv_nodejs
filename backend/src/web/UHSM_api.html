@@ -56,7 +56,7 @@
 			// }
 			const urlAPIUsina = 'http://54.94.47.11:3000/usinas/UHSM';
 			const urlAPIEstacoes = 'http://54.94.47.11:3000/estacoes/UHSM';
-			const urlPoligonoKML = 'http://3.140.139.163/map/coordenadas/zonas/UHSM.txt';
+			// const urlPoligonoKML = 'http://3.140.139.163/map/coordenadas/zonas/UHSM.txt';
 			// const urlCasasKML = 'http://3.140.139.163/map/coordenadas/casas/casas_UHSM.txt';
 			
 			// Variável global para armazenar informações
@@ -103,7 +103,7 @@
 				});
 
 				// Carrega o arquivo KML e analisa as coordenadas para criar um polígono
-				geoXml.parse(urlPoligonoKML);
+				// geoXml.parse(urlPoligonoKML);
 
 				var tourStops = new Array();
 				for (var marcador of marcadores) {
@@ -161,13 +161,13 @@
 							path: google.maps.SymbolPath.CIRCLE,
 							fillColor: cor,
 							fillOpacity: 1,
-							scale: 8,
+							scale: 4,
 							strokeWeight: 1,
 							rotation: 0,
             				labelOrigin: new google.maps.Point(-0.05, -2), // Ajuste de posição do label
 						},
 						label: {
-							text: label,
+							// text: label,
 							color: 'black', // Cor do texto do label
 							fontWeight: 'bold' // Estilo do texto do label
 						}
